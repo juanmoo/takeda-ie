@@ -88,7 +88,7 @@ var sequence_html = function(sequence, annotationsDict) {
 
 var show = function() {
     var annotationsDict = contents[idx]['annotations'];
-    var tokens = contents[idx]['description'].split(">>");
+    var tokens = contents[idx]['description'].split(" ");
     var values = contents[idx]['values'];
 
     seq_html = sequence_html(tokens, annotationsDict);
