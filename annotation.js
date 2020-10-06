@@ -19,6 +19,7 @@ var choice = $("#choice");
 var keyname = $("#key-name");
 var instructionTable = $("#instruction-table");
 var prevAnswer = $("#prev")
+var armNum = $("#armNumber")
 
 var form = $("#form");
 var answer = {};
@@ -238,10 +239,6 @@ var canSubmitStay = function () {
   return canSubmit() && (noInfo.checked == false)
 };
 
-var isFirstArm = function () {
-
-}
-
 var show = function () {
   annotations[key].sort(function (a, b) {
     return a[0] - b[0];
@@ -275,6 +272,7 @@ var show = function () {
     );
   });
 
+  // Form Submition
   if (canSubmit()) {
     submit.removeAttr("disabled");
     submit.removeClass("btn-default");
@@ -285,7 +283,7 @@ var show = function () {
     submit.addClass("btn-default");
   }
 
-  if (canSubmitStay()){
+  if (canSubmitStay()) {
     submitStay.removeAttr("disabled");
     submitStay.removeClass("btn-default");
     submitStay.addClass("btn-success");
@@ -295,6 +293,10 @@ var show = function () {
     submitStay.addClass("btn-default");
   }
 };
+
+// Filter non-arm entities for arms 2+
+armNum = parseInt(armNum.text())
+keys = keys.filter(key => armNum < 2 || key.includes('arm_'))
 
 makeDom();
 
@@ -351,7 +353,7 @@ trigger.click(function () {
   }
 });
 
-// Helper function161G
+// Helper function
 var makeSpans = function (spansStrToAns) {
   var annList = _.map(spansStrToAns.split(","), function (el) {
     return parseInt(el);
