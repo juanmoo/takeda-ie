@@ -27,12 +27,30 @@
     <div id="prev" hidden>${PREV_RESPONSE}</div>
 
     <h2>Highlight the <strong id="key-name" class="key-name">name</strong> in the description</h2>
-    <h4>Arm Number: <span id="armNumber">${arm_number}</span></h4>
     <div id="raw">${description}</div>
 
     <div class="row" id="workContent">
         <div class="col-xs-12 col-sm-8 content">
+            <table class="table table-bordered">
+                <thead>
+                    <tr>
+                        <th scope="col">Document ID</th>
+                        <th scope="col">Document Name</th>
+                        <th scope="col">Arm Number</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>${doc_id}</td>
+                        <td>${doc_name}</td>
+                        <td><span id="armNumber">${arm_number}</span></td>
+                    </tr>
+                </tbody>
+            </table>
+            <hr>
             <div id="well" class="ann well"></div>
+            <hr>
+
         </div>
         <div class="col-xs-12 col-sm-4 fields">
             <div id="button-div">
