@@ -12,30 +12,30 @@ var key;
 // ---------------------------------------------------------
 
 var raw = $("#raw");
-var spans = $("#spans");
 var well = $("#well");
 var submit = $("#submit");
 var submitStay = $("#submit-stay");
 var choice = $("#choice");
 var keyname = $("#key-name");
 var instructionTable = $("#instruction-table");
+var prevAnswer = $("#prev")
 
 var form = $("#form");
 var answer = {};
 var tagHidden = {};
 var noVal = {};
 var radios = {};
-// answerHiddenDuplicates value of answer but is needed because
+// answerHidden Duplicates value of answer but is needed because
 // otherwise the data is not sent
 var answerHidden = {};
 
-var makeInstruction = function(key) {
+var makeInstruction = function (key) {
   return $("<tr>")
     .append($("<td>").text(fieldName[key]))
     .append($("<td>").text(longDesc[key]));
 };
 
-var makeChoice = function(key) {
+var makeChoice = function (key) {
   var input = $("<input>")
     .attr({
       name: "choice",
@@ -54,7 +54,7 @@ var makeChoice = function(key) {
   return label;
 };
 
-var makeAnswerHidden = function(key) {
+var makeAnswerHidden = function (key) {
   var input = $("<input>").attr({
     type: "hidden",
     name: key,
@@ -64,7 +64,7 @@ var makeAnswerHidden = function(key) {
   return input;
 };
 
-var makeTagHidden = function(key) {
+var makeTagHidden = function (key) {
   var input = $("<input>").attr({
     type: "hidden",
     name: key + "-tag",
@@ -74,11 +74,11 @@ var makeTagHidden = function(key) {
   return input;
 };
 
-var makeFormRow = function(key) {
+var makeFormRow = function (key) {
   var checkbox = $("<input>")
     .attr({ type: "checkbox", id: "no-" + key })
     .addClass("form-check-input")
-    .change(function() {
+    .change(function () {
       show();
     });
   var label = $("<label>")
@@ -122,7 +122,7 @@ var makeFormRow = function(key) {
   return div;
 };
 
-var makeDom = function() {
+var makeDom = function () {
   for (var key of keys) {
     form.append(makeFormRow(key));
     form.append(makeTagHidden(key));
@@ -140,14 +140,14 @@ var makeDom = function() {
 
 var old_annotations = [];
 
-var get_annotation_id = function(token_id, annotations) {
-  var found = annotations.findIndex(function(annotation) {
+var get_annotation_id = function (token_id, annotations) {
+  var found = annotations.findIndex(function (annotation) {
     return token_id >= annotation[0] && token_id < annotation[1];
   });
   return found;
 };
 
-var mouse_down = function(id) {
+var mouse_down = function (id) {
   var annotation_id = get_annotation_id(id, annotations[key]);
   if (annotation_id > -1) {
     delete_annotation(annotation_id);
@@ -157,7 +157,7 @@ var mouse_down = function(id) {
   }
 };
 
-var mouse_up = function(id) {
+var mouse_up = function (id) {
   if (first_token > -1) {
     if (first_token <= id) {
       add_annotation([first_token, id + 1]);
@@ -170,7 +170,7 @@ var mouse_up = function(id) {
   clear_selection();
 };
 
-var clear_selection = function() {
+var clear_selection = function () {
   if (document.selection) {
     document.selection.empty();
   } else if (window.getSelection) {
@@ -178,31 +178,31 @@ var clear_selection = function() {
   }
 };
 
-var get_value = function() {
-  var values = _.map(annotations[key], function(annotation) {
+var get_value = function () {
+  var values = _.map(annotations[key], function (annotation) {
     return tokens.slice(annotation[0], annotation[1]).join(" ");
   });
   return values.join(" ");
 };
 
-var remove_all_annotations = function() {
+var remove_all_annotations = function () {
   old_annotations = annotations[key].slice();
   annotations[key] = [];
 };
 
-var delete_annotation = function(annotation_id) {
+var delete_annotation = function (annotation_id) {
   if (annotation_id > -1) {
     old_annotations = annotations[key].slice();
     annotations[key].splice(annotation_id, 1);
   }
 };
 
-var add_annotation = function(annotation) {
+var add_annotation = function (annotation) {
   old_annotations = annotations[key].slice();
   annotations[key].push(annotation);
 };
 
-var toggle_old_new = function() {
+var toggle_old_new = function () {
   var new_annotations = annotations[key].slice();
   annotations[key] = old_annotations.slice();
   old_annotations = new_annotations;
@@ -212,18 +212,14 @@ var toggle_old_new = function() {
 // Displaying
 // ---------------------------------------------------------
 
-var sequence_html = function(sequence, annotations) {
-  console.log(sequence);
-  var ret = _.map(sequence, function(token, index) {
+var sequence_html = function (sequence, annotations) {
+  // console.log(sequence);
+  var ret = _.map(sequence, function (token, index) {
     return '<span class="token" id=tok_' + index + ">" + token + "</span>";
   });
-  _.each(annotations, function(annotation) {
+  _.each(annotations, function (annotation) {
     ret[annotation[0]] = '<strong class="annotation">' + ret[annotation[0]];
     ret[annotation[1] - 1] = ret[annotation[1] - 1] + "</strong>";
-  });
-  _.each(suggests, function(underlined) {
-    ret[underlined[0]] = '<span class="underlined">' + ret[underlined[0]];
-    ret[underlined[1] - 1] = ret[underlined[1] - 1] + "</span>";
   });
 
   return ret.join(" ");
@@ -242,6 +238,9 @@ var canSubmitStay = function () {
   return canSubmit() && (noInfo.checked == false)
 };
 
+var isFirstArm = function () {
+
+}
 
 var show = function () {
   annotations[key].sort(function (a, b) {
@@ -254,12 +253,10 @@ var show = function () {
   answer[key].val(values[key]);
   answerHidden[key].val(values[key]);
   tagHidden[key].val(annotations[key]);
-  console.log(key);
-  console.log(annotations[key]);
   keyname.html(shortName[key]);
 
   // Handler on tokens
-  $(".token").mousedown(function() {
+  $(".token").mousedown(function () {
     mouse_down(
       parseInt(
         $(this)
@@ -268,7 +265,7 @@ var show = function () {
       )
     );
   });
-  $(".token").mouseup(function() {
+  $(".token").mouseup(function () {
     mouse_up(
       parseInt(
         $(this)
@@ -305,19 +302,19 @@ makeDom();
 // Event handlers
 // ---------------------------------------------------------
 
-$("#undo").click(function() {
+$("#undo").click(function () {
   toggle_old_new();
   show();
 });
 
-$("#remove").click(function() {
+$("#remove").click(function () {
   remove_all_annotations();
   show();
 });
 
 //highlight selected category
 var inputs = $("#choice input:radio");
-inputs.change(function() {
+inputs.change(function () {
   inputs.parent().removeClass("btn-success");
   inputs.parent().addClass("btn-default");
   if ($(this).is(":checked")) {
@@ -344,7 +341,7 @@ var content = $("#instructionBody");
 var trigger = $("#collapseTrigger");
 content.hide();
 $(".collapse-text").text("(Click to expand)");
-trigger.click(function() {
+trigger.click(function () {
   content.toggle();
   var isVisible = content.is(":visible");
   if (isVisible) {
@@ -354,22 +351,22 @@ trigger.click(function() {
   }
 });
 
-// Helper function
-var makeSpans = function(spansStrToAns) {
-  var annList = _.map(spansStrToAns.split(","), function(el) {
+// Helper function161G
+var makeSpans = function (spansStrToAns) {
+  var annList = _.map(spansStrToAns.split(","), function (el) {
     return parseInt(el);
   });
   var i = 2,
-    list = _.groupBy(annList, function(a, b) {
+    list = _.groupBy(annList, function (a, b) {
       return Math.floor(b / i);
     });
   return _.toArray(list);
 };
 
 // No reaction enable Submit
-document.getElementById('noReaction').onclick = function() {
-	show();
-    }
+document.getElementById('noInfo').onclick = function () {
+  show();
+}
 
 // ---------------------------------------------------------
 // Initialize
@@ -378,8 +375,6 @@ document.getElementById('noReaction').onclick = function() {
 key = keys[0];
 radios[key].click();
 var tokens = raw.text().split(" ");
+prevAnswer = prevAnswer.text() !== "undefined" ? JSON.parse(prevAnswer.text()) : "no-prev";
 raw.hide();
-var suggests = makeSpans(spans.text());
-spans.hide();
-console.log(tokens);
 show();

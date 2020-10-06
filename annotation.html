@@ -1,6 +1,6 @@
 <meta content="width=device-width,initial-scale=1" name="viewport" />
 <section class="container" id="Relevancy">
-    <div class="row">
+    <!--div class="row">
         <div class="col-xs-12 col-md-12">
             <div class="panel panel-primary"><a class="panel-heading" href="javascript:void(0);"
                     id="collapseTrigger"><strong>Tagging Instructions</strong> <span class="collapse-text">(Click to
@@ -23,11 +23,12 @@
                 </div>
             </div>
         </div>
-    </div>
+    </div-->
+    <div id="prev" hidden>${PREV_RESPONSE}</div>
 
     <h2>Highlight the <strong id="key-name" class="key-name">name</strong> in the description</h2>
+    <h4>Arm Number: <span id="armNumber">${arm_number}</span></h4>
     <div id="raw">${description}</div>
-    <div id="spans">${spans}</div>
 
     <div class="row" id="workContent">
         <div class="col-xs-12 col-sm-8 content">
@@ -51,15 +52,15 @@
     </div>
     <div id="form" class="row"> </div>
     <span title="Highlight all fields before submitting"><input name="submit" id="submit" class="btn btn-default"
-            data-key="Enter" type="submit" disabled=disabled value="Submit reaction" /></span>
+            data-key="Enter" type="submit" disabled=disabled value="Submit arm" /></span>
     <span title="Highlight all fields before submitting"><input name="submit-stay" id="submit-stay"
             class="btn btn-default" data-key="Enter" type="submit" disabled=disabled
-            value="Save and annotate another reaction" /></span>
+            value="Save and annotate another arm" /></span>
     <form>
         <fieldset>
             <p>
-                <input type="checkbox" id="noReaction" value="No Reaction" />
-                <label for="noReaction">There is no reaction</label>
+                <input type="checkbox" id="noInfo" value="No Reaction" />
+                <label for="noInfo">There is no relevant information.</label>
             </p>
         </fieldset>
     </form>
