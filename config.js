@@ -3,43 +3,43 @@
 // ---------------------------------------------------------
 
 var fieldName = {
-    "Reactants": "Reactants",
-    "Products": "Products",
-    "Yield": "Yield",
-    "Reaction": "Reaction",
-    "Catalyst": "Catalyst",
-    "Solvent": "Solvent",
-    "Temperature": "Temperature",
-    "Time": "Time",
+    "title": "Study Title",
+    "authors": "Authors",
+    "journal": "Journal Name",
+    "study_type": "Study Type",
+    "arm_description": "Arm Description",
+    "arm_dosage": "Arm Dosage",
+    "arm_efficacy_metric": "Efficacy Metric",
+    "arm_efficacy_results": "Efficacy Results"
 }
 var shortName = {
-    "Reactants": "Reactants",
-    "Products": "Products",
-    "Yield": "Yield",
-    "Reaction": "Reaction",
-    "Catalyst": "Catalyst",
-    "Solvent": "Solvent",
-    "Temperature": "Temperature",
-    "Time": "Time",
+    "title": "Study Title",
+    "authors": "Authors",
+    "journal": "Journal Name",
+    "study_type": "Study Type",
+    "arm_description": "Arm Description",
+    "arm_dosage": "Arm Dosage",
+    "arm_efficacy_metric": "Efficacy Metric",
+    "arm_efficacy_results": "Efficacy Results"
 }
 var longDesc = {
-    "Reactants": "Reactants",
-    "Products": "Products of the reaction",
-    "Yield": "Yield of the reaction",
-    "Reaction": "Reaction type",
-    "Catalyst": "Catalyst used in the reaction",
-    "Solvent": "Solvent used in the reaction",
-    "Temperature": "Temperature of the reaction",
-    "Time": "Duration of the reaction",
+    "title": "Study Title",
+    "authors": "Authors",
+    "journal": "Journal Name",
+    "study_type": "Study Type",
+    "arm_description": "Arm Description",
+    "arm_dosage": "Arm Dosage",
+    "arm_efficacy_metric": "Efficacy Metric",
+    "arm_efficacy_results": "Efficacy Results"
 }
 var shortcutKey = {
-    "Reactants": "R",
-    "Products": "P",
-    "Yield": "Y",
-    "Reactants": "RT",
-    "Catalyst": "Cat",
-    "Solvent": "Solv",
-    "Temperature": "Te",
-    "Time": "Ti",
+    "title": "Study Title",
+    "authors": "Authors",
+    "journal": "Journal Name",
+    "study_type": "Study Type",
+    "arm_description": "Arm Description",
+    "arm_dosage": "Arm Dosage",
+    "arm_efficacy_metric": "Efficacy Metric",
+    "arm_efficacy_results": "Efficacy Results"
 }
 
