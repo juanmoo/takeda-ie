@@ -229,17 +229,22 @@ var sequence_html = function(sequence, annotations) {
   return ret.join(" ");
 };
 
-var canSubmit = function() {
+var canSubmit = function () {
   for (var key of keys) {
-    if (values[key] == "" && !noVal[key].is(":checked") && noReaction.checked == false) {
+    if (values[key] == "" && !noVal[key].is(":checked") && noInfo.checked == false) {
       return false;
     }
   }
   return true;
 };
 
-var show = function() {
-  annotations[key].sort(function(a, b) {
+var canSubmitStay = function () {
+  return canSubmit() && (noInfo.checked == false)
+};
+
+
+var show = function () {
+  annotations[key].sort(function (a, b) {
     return a[0] - b[0];
   });
   //fill_annotated_values(datum);
@@ -277,13 +282,17 @@ var show = function() {
     submit.removeAttr("disabled");
     submit.removeClass("btn-default");
     submit.addClass("btn-success");
-    submitStay.removeAttr("disabled");
-    submitStay.removeClass("btn-default");
-    submitStay.addClass("btn-success");
   } else {
     submit.attr("disabled", "disabled");
     submit.removeClass("btn-success");
     submit.addClass("btn-default");
+  }
+
+  if (canSubmitStay()){
+    submitStay.removeAttr("disabled");
+    submitStay.removeClass("btn-default");
+    submitStay.addClass("btn-success");
+  } else {
     submitStay.attr("disabled", "disabled");
     submitStay.removeClass("btn-success");
     submitStay.addClass("btn-default");
