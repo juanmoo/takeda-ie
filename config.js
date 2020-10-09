@@ -5,7 +5,6 @@
 var fieldName = {
     "title": "Study Title",
     "authors": "Authors",
-    "journal": "Journal Name",
     "study_type": "Study Type",
     "arm_description": "Arm Description",
     "arm_dosage": "Arm Dosage",
@@ -15,7 +14,6 @@ var fieldName = {
 var shortName = {
     "title": "Study Title",
     "authors": "Authors",
-    "journal": "Journal Name",
     "study_type": "Study Type",
     "arm_description": "Arm Description",
     "arm_dosage": "Arm Dosage",
@@ -25,7 +23,6 @@ var shortName = {
 var longDesc = {
     "title": "Study Title",
     "authors": "Authors",
-    "journal": "Journal Name",
     "study_type": "Study Type",
     "arm_description": "Arm Description",
     "arm_dosage": "Arm Dosage",
@@ -35,7 +32,6 @@ var longDesc = {
 var shortcutKey = {
     "title": "Study Title",
     "authors": "Authors",
-    "journal": "Journal Name",
     "study_type": "Study Type",
     "arm_description": "Arm Description",
     "arm_dosage": "Arm Dosage",

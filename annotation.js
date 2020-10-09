@@ -15,6 +15,7 @@ var raw = $("#raw");
 var well = $("#well");
 var submit = $("#submit");
 var submitStay = $("#submit-stay");
+var openDoc = $("#open-document")
 var choice = $("#choice");
 var keyname = $("#key-name");
 var instructionTable = $("#instruction-table");
@@ -208,6 +209,16 @@ var toggle_old_new = function () {
   annotations[key] = old_annotations.slice();
   old_annotations = new_annotations;
 };
+
+// function trim(s){ 
+//   return ( s || '' ).replace( /^\s+|\s+$/g, '' ); 
+// }
+
+openDoc.click(() => {
+  let pdfPath = "pdfs/" + $("#docID").text() + ".pdf"
+  console.log("PATH: ", pdfPath)
+  window.open(pdfPath, '_blank', 'toolbar=0,location=0,menubar=0,height=500,width=500');
+})
 
 // ---------------------------------------------------------
 // Displaying

@@ -42,7 +42,7 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td>${doc_id}</td>
+                        <td><span id="docID">${doc_id}</span></td>
                         <td>${doc_name}</td>
                         <td><span id="armNumber">${arm_number}</span></td>
                         <td>${position}</td>
@@ -52,7 +52,9 @@
             <hr>
             <h5>Section Name: <strong>${head}</strong></h5>
             <div id="well" class="ann well"></div>
-            <hr>
+            <div class="box pull-right">
+                <div id="open-document" class="btn btn-info">Open Document</div>
+            </div>
         </div>
         <div class="col-xs-12 col-sm-4 fields">
             <div id="button-div">
