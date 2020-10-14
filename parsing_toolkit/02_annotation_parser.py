@@ -78,26 +78,42 @@ def make_bmes(data, key_map=bmes_label_map):
         for entry in data[fname]['paragraphs']:
             text = tokenizer(entry['text']).text
             bmes_tokens = text.split()
-            bmes_annotations = ['O'] * len(bmes_tokens)
+            bmes_annotations = ['O |'] * len(bmes_tokens)
 
+            lmin = None
+            lmax = None
             for k in [e for e in entry.keys() if e.endswith('-spans') and 'title' not in e]:
                 key = k[:-6]
                 key = key_map.get(key, key)
 
+
                 for start, stop in entry[k]:
                     # For tokens that were annotated multiple times, ranges take presendence over singletons
-                    if stop - start == 1 and bmes_annotations[start] == 'O':
-                        bmes_annotations[start] = f'S-{key}'
-                    else:
-                        for i in range(start, stop):
-                            if i == start:
-                                bmes_annotations[i] = f'B-{key}'
-                            elif i == stop - 1:
-                                bmes_annotations[i] = f'M-{key}'
-                            else:
-                                bmes_annotations[i] = f'E-{key}'
+                    # bmes_annotations[start] == 'O':
+                    for i in range(start, stop):
+                        if bmes_annotations[i] != 'O |':
+                            lmin = start if not lmin else min(lmin, start)
+                            lmax = stop if not lmax else max(lmax, stop)
+                        else:
+                            bmes_annotations[i] = ''
 
+                        if i == start:
+                            if i == stop - 1:
+                                bmes_annotations[start] += f' S-{key} |' 
+                            else:
+                                bmes_annotations[i] += f' B-{key} |'
+                        elif i == stop - 1:
+                            bmes_annotations[i] += f' E-{key} |'
+                        else:
+                            bmes_annotations[i] += f' M-{key} |'
+                        
+                        
+            bmes_annotations = list(map(lambda s: s[:-2], bmes_annotations))
             bmes = list(zip(bmes_tokens, bmes_annotations))
+            if lmin and lmax:
+                bmes.insert(lmax, '^-' * 20 + 'STOP' + '-^' * 20)
+                bmes.insert(lmin, 'v-' * 20 + 'START' + '-v' * 20)
+
             bmes = '\n'.join([' '.join(p) for p in bmes])
             paragraphs_bmes.append(bmes)
         bmes_list.append(paragraphs_bmes)
