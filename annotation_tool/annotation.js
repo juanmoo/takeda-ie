@@ -18,7 +18,6 @@ var submitStay = $("#submit-stay");
 var openDoc = $("#open-document")
 var choice = $("#choice");
 var keyname = $("#key-name");
-var instructionTable = $("#instruction-table");
 var prevAnswer = $("#prev")
 var armNum = $("#armNumber")
 
@@ -30,12 +29,6 @@ var radios = {};
 // answerHidden Duplicates value of answer but is needed because
 // otherwise the data is not sent
 var answerHidden = {};
-
-var makeInstruction = function (key) {
-  return $("<tr>")
-    .append($("<td>").text(fieldName[key]))
-    .append($("<td>").text(longDesc[key]));
-};
 
 var makeChoice = function (key) {
   var input = $("<input>")
@@ -124,15 +117,24 @@ var makeFormRow = function (key) {
   return div;
 };
 
+var makePredeterminedCategory = function (key) {
+  form.append(makeFormRow(key));
+  form.append(makeTagHidden(key));
+  form.append(makeAnswerHidden(key));
+  choice.append(makeChoice(key));
+  annotations[key] = [];
+  values[key] = "";
+}
+
 var makeDom = function () {
+  // Filter non-arm entities for arms 2+
+  armNum = parseInt(armNum.text())
+  keys = keys.filter(key => armNum < 2 || key.includes('arm_'))
+
+
+  // Add entries for all categories
   for (var key of keys) {
-    form.append(makeFormRow(key));
-    form.append(makeTagHidden(key));
-    form.append(makeAnswerHidden(key));
-    choice.append(makeChoice(key));
-    annotations[key] = [];
-    values[key] = "";
-    instructionTable.append(makeInstruction(key));
+    makePredeterminedCategory(key)
   }
 };
 
@@ -210,10 +212,7 @@ var toggle_old_new = function () {
   old_annotations = new_annotations;
 };
 
-// function trim(s){ 
-//   return ( s || '' ).replace( /^\s+|\s+$/g, '' ); 
-// }
-
+// Open document getting annotated.
 openDoc.click(() => {
   let pdfPath = "pdfs/" + $("#docID").text() + ".pdf"
   console.log("PATH: ", pdfPath)
@@ -305,10 +304,6 @@ var show = function () {
   }
 };
 
-// Filter non-arm entities for arms 2+
-armNum = parseInt(armNum.text())
-keys = keys.filter(key => armNum < 2 || key.includes('arm_'))
-
 makeDom();
 
 // ---------------------------------------------------------
@@ -349,20 +344,6 @@ inputs.change(function () {
   }
 });
 
-// Instructions expand/collapse
-var content = $("#instructionBody");
-var trigger = $("#collapseTrigger");
-content.hide();
-$(".collapse-text").text("(Click to expand)");
-trigger.click(function () {
-  content.toggle();
-  var isVisible = content.is(":visible");
-  if (isVisible) {
-    $(".collapse-text").text("(Click to collapse)");
-  } else {
-    $(".collapse-text").text("(Click to expand)");
-  }
-});
 
 // Helper function
 var makeSpans = function (spansStrToAns) {
