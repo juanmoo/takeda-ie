@@ -1,29 +1,5 @@
 <meta content="width=device-width,initial-scale=1" name="viewport" />
 <section class="container" id="Relevancy">
-    <!--div class="row">
-        <div class="col-xs-12 col-md-12">
-            <div class="panel panel-primary"><a class="panel-heading" href="javascript:void(0);"
-                    id="collapseTrigger"><strong>Tagging Instructions</strong> <span class="collapse-text">(Click to
-                        expand)</span> </a>
-                <p>&nbsp;&nbsp; Download the detailed annotation instructions <a href="/docs/annotation_guide.pdf"
-                        target="_blank">here</a></p>
-                <div class="panel-body" id="instructionBody"><strong>Tag the description to extract the following fields
-                        of interest</strong>
-                    <table class="table table-condensed table-striped table-responsive">
-                        <colgroup>
-                            <col class="col-xs-2 col-md-2" />
-                            <col class="col-xs-10 col-md-10" />
-                        </colgroup>
-                        <tbody id="instruction-table">
-                        </tbody>
-                    </table>
-                    <div class="text-center">
-                        <img src="images/tagging.gif" alt="tagging" width="50%" />
-                    </div>
-                </div>
-            </div>
-        </div>
-    </div-->
     <div id="prev" hidden>${PREV_RESPONSE}</div>
 
     <h2>Highlight the <strong id="key-name" class="key-name"></strong> in the description</h2>
@@ -69,6 +45,9 @@
             <div class="btn-group-vertical" data-toggle="buttons" id="choice">
             </div>
 
+            <div class="btn-group pull-right" style="margin-top: 5px;" role="group">
+                <button type="button" id="add-numbered-entries" class="btn btn-default"><span class="glyphicon glyphicon-plus"></span></button>
+            </div>
         </div>
 
     </div>
@@ -88,6 +67,8 @@
     </form>
 
 </section>
+
+<!-- Bootstrap 3 -->
 <link crossorigin="anonymous" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css"
     integrity="sha384-BVYiiSIFeK1dGmJRAkycuHAHRg32OmUcww7on3RYdg4Va+PmSTsz/K68vbdEjh4u" rel="stylesheet" />
 <script src="https://code.jquery.com/jquery-3.1.0.min.js"
@@ -95,6 +76,8 @@
 <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"
     integrity="sha384-Tc5IQib027qvyjSMfHjOMaLkfuWVxZxUPnCJA7l2mCWNIpG9mGCD8wGNIcPD7Txa"
     crossorigin="anonymous"></script>
+
+
 <script src="https://cdnjs.cloudflare.com/ajax/libs/lodash.js/2.4.1/lodash.min.js"></script>
 <link href="style.css" rel="stylesheet" />
 <script src="config.js"></script>

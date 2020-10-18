@@ -3,6 +3,7 @@
 // ---------------------------------------------------------
 
 var keys = Object.keys(fieldName);
+var number_keys = [];
 var annotations = {};
 var values = {};
 var key;
@@ -17,9 +18,11 @@ var submit = $("#submit");
 var submitStay = $("#submit-stay");
 var openDoc = $("#open-document")
 var choice = $("#choice");
+var addNumberedEntry = $("#add-numbered-entries")
 var keyname = $("#key-name");
 var prevAnswer = $("#prev")
 var armNum = $("#armNumber")
+var numberedCategoryCount = 1;
 
 var form = $("#form");
 var answer = {};
@@ -126,6 +129,19 @@ var makePredeterminedCategory = function (key) {
   values[key] = "";
 }
 
+var makeNumberedCategory = function (k, num) {
+  // Make config entries
+  fieldName[`${k}${num}`] = fieldName[`${k}1`].replace('1', num.toString())
+  shortName[`${k}${num}`] = shortName[`${k}1`].replace('1', num.toString())
+  longDesc[`${k}${num}`] = longDesc[`${k}1`].replace('1', num.toString())
+  shortcutKey[`${k}${num}`] = shortcutKey[`${k}1`].replace('1', num.toString())
+
+  // Create Category
+  makePredeterminedCategory(`${k}${num}`);
+
+  updateInputs();
+}
+
 var makeDom = function () {
   // Filter non-arm entities for arms 2+
   armNum = parseInt(armNum.text())
@@ -217,6 +233,17 @@ openDoc.click(() => {
   let pdfPath = "pdfs/" + $("#docID").text() + ".pdf"
   console.log("PATH: ", pdfPath)
   window.open(pdfPath, '_blank', 'toolbar=0,location=0,menubar=0,height=500,width=500');
+})
+
+// Create new description entry
+addNumberedEntry.click(() => {
+  numberedCategoryCount += 1
+  for (k of number_keys) {
+    console.log(`Adding new category: ${k}`)
+    keys.push(`${k}${numberedCategoryCount}`)
+    makeNumberedCategory(k, numberedCategoryCount)
+    show();
+  }
 })
 
 // ---------------------------------------------------------
@@ -322,27 +349,31 @@ $("#remove").click(function () {
 
 //highlight selected category
 var inputs = $("#choice input:radio");
-inputs.change(function () {
-  inputs.parent().removeClass("btn-success");
-  inputs.parent().addClass("btn-default");
-  if ($(this).is(":checked")) {
-    key = $(this).val();
-    $(this)
-      .parent()
-      .removeClass("btn-default");
-    $(this)
-      .parent()
-      .addClass("btn-success");
-    show();
-  } else {
-    $(this)
-      .parent()
-      .removeClass("btn-success");
-    $(this)
-      .parent()
-      .addClass("btn-default");
-  }
-});
+updateInputs = function () {
+  inputs = $("#choice input:radio");
+  inputs.change(function () {
+    inputs.parent().removeClass("btn-success");
+    inputs.parent().addClass("btn-default");
+    if ($(this).is(":checked")) {
+      key = $(this).val();
+      $(this)
+        .parent()
+        .removeClass("btn-default");
+      $(this)
+        .parent()
+        .addClass("btn-success");
+      show();
+    } else {
+      $(this)
+        .parent()
+        .removeClass("btn-success");
+      $(this)
+        .parent()
+        .addClass("btn-default");
+    }
+  });
+}
+updateInputs()
 
 
 // Helper function
@@ -365,6 +396,14 @@ document.getElementById('noInfo').onclick = function () {
 // ---------------------------------------------------------
 // Initialize
 // ---------------------------------------------------------
+
+// Get numbered keys
+for (k of keys) {
+  if (k.endsWith("-1")) {
+    k = k.substring(0, k.length - 1)
+    number_keys.push(k)
+  }
+}
 
 key = keys[0];
 radios[key].click();
