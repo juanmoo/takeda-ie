@@ -89,21 +89,23 @@ def correct_bmes_document(input_path, output_dir):
     basename = os.path.basename(input_path)
 
     with open(os.path.join(output_dir, basename), 'w') as f:
-        f.write(output_dir)
+        f.write(output)
     
-
 
 
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser('<script>')
-    parser.add_argument('input_path', type=str,
+    parser.add_argument('input_dir', type=str,
                         help='Path to bmes file to correct.')
     parser.add_argument('output_dir', type=str,
                         help='Path to output directory.')
 
     def correct_cli(args):
-        correct_bmes_document(args.input_path, args.output_dir)
+        files = [f for f in os.listdir(args.input_dir) if f.lower().endswith('.bmes')]
+        for f in files:
+            print(f'\n\n{"=" * 100}\nProcessing document: \'{f}\'\n')
+            correct_bmes_document(os.path.join(args.input_dir, f), args.output_dir)
 
     args = parser.parse_args()
     correct_cli(args)
