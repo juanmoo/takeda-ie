@@ -37,7 +37,8 @@ def check_matches(labels):
     return True
             
 
-
+# Currently, this function iterates through the document and finds sequences of singleton tags
+# and gives the option of merging them.
 def correct_bmes_document(input_path, output_dir):
     with open(input_path, 'r') as f:
         text = f.read()

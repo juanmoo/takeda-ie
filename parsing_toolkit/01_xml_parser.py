@@ -105,9 +105,7 @@ def parse_xml(file_path):
 # ----- Filtering ----- #
 
 
-def filter(data):
-    par_min_len = 25
-    par_max_len = 300
+def filter(data, par_min_len=25, par_max_len=300):
 
     # Constraints
     constraints = [

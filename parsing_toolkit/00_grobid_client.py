@@ -1,5 +1,3 @@
-#! /usr/bin/python3
-
 '''
 The purpose of this script is to transform native PDF files into their corresponding TEI XML representations using GROBID.
 Given the path of the folder containing the native PDF files, it will create a folder containing the corresponding xmls.
@@ -22,6 +20,7 @@ parser = argparse.ArgumentParser()
 parser.add_argument('source', help='Path to folder with PDFs')
 parser.add_argument('--dest', help='Path of folder where XMLs are to be placed')
 parser.add_argument('--server-url', help="URL of API endpoint to process pdfs")
+parser.add_argument('--num-workers', type=int, help='Number of threads to be used simultaneously.', default=1)
 args = parser.parse_args(argv)
 
 # Verify Args #
@@ -44,6 +43,8 @@ if args.server_url is not None:
 else:
     # Default to local server if none is given.
     base = 'http://localhost:8070/api/'
+
+pool_workers = args.num_workers
 
 print('Using GROBID server at:', base, '\n')
 
@@ -74,5 +75,5 @@ def parse_file(name):
             xml_file.write(r.text)
     print(name, 'Done!')
 
-with Pool(10) as p:
+with Pool(pool_workers) as p:
     p.map(parse_file, pdf_files)

@@ -1,11 +1,13 @@
 import os
 import argparse
 import pandas as pd
+import json
 from spacy.lang.en import English
 
 # -- Defaults -- #
-relevant_entities = ['title', 'authors', 'study_type', 'arm_description',
-                     'arm_dosage', 'arm_efficacy_metric', 'arm_efficacy_results']
+relevant_entities = ['title', 'authors', 'study_type',
+                     'arm_efficacy_metric', 'arm_efficacy_results']
+numbered_entities = ['arm_description', 'arm_dosage']
 
 bmes_label_map = {
     'authors': 'AUTH',
@@ -57,7 +59,24 @@ def parse_csv(csv_path, relevant_entities=relevant_entities):
                         k_locs = get_locs(entry[k + '-tag'])
                         if f'{k}-spans' not in paragraph_entry:
                             paragraph_entry[f'{k}-spans'] = []
+                            paragraph_entry[f'{k}-arms'] = []
                         paragraph_entry[f'{k}-spans'].extend(get_spans(k_locs))
+                        paragraph_entry[f'{k}-arms'].extend([int(entry['arm_number'])] * (len(k_locs)//2))
+                for k in numbered_entities:
+                    j = 1
+                    while f'{k}-{j}' in entry:
+                        knum = f'{k}-{j}'
+                        print(f'Extracting {knum}')
+                        if entry[knum] and entry[knum + '-tag']:
+                            k_locs = get_locs(entry[knum + '-tag'])
+                            if f'{k}-spans' not in paragraph_entry:
+                                paragraph_entry[f'{k}-spans'] = []
+                                paragraph_entry[f'{k}-arms'] = []
+                            paragraph_entry[f'{k}-spans'].extend(get_spans(k_locs))
+                            paragraph_entry[f'{k}-arms'].extend([int(entry['arm_number'])] * (len(k_locs)//2))
+                            assert(len(paragraph_entry[f'{k}-spans']) == len(paragraph_entry[f'{k}-arms']))
+                        j += 1
+
 
                 # Counter Logic
                 count += 1
@@ -86,12 +105,11 @@ def make_bmes(data, key_map=bmes_label_map):
                 key = k[:-6]
                 key = key_map.get(key, key)
 
-
                 for start, stop in entry[k]:
                     # For tokens that were annotated multiple times, ranges take presendence over singletons
                     # bmes_annotations[start] == 'O':
                     for i in range(start, stop):
-                        if bmes_annotations[i] != 'O |':
+                        if bmes_annotations[i] not in ['O |']:
                             lmin = start if not lmin else min(lmin, start)
                             lmax = stop if not lmax else max(lmax, stop)
                         else:
@@ -99,18 +117,27 @@ def make_bmes(data, key_map=bmes_label_map):
 
                         if i == start:
                             if i == stop - 1:
-                                bmes_annotations[start] += f' S-{key} |' 
+                                bmes_annotations[start] += f' S-{key} |'
                             else:
                                 bmes_annotations[i] += f' B-{key} |'
                         elif i == stop - 1:
                             bmes_annotations[i] += f' E-{key} |'
                         else:
-                            bmes_annotations[i] += f' M-{key} |'
-                        
-                        
+                            bmes_annotations[i] += f' I-{key} |'
+
             bmes_annotations = list(map(lambda s: s[:-2], bmes_annotations))
+
+            # Merge tags that agree
+            all_merged = True
+            for j, a in enumerate(bmes_annotations):
+                tags = list(set([e.strip() for e in a.split('|')]))
+                if len(tags) == 1:
+                    bmes_annotations[j] = tags[0]
+                else:
+                    all_merged = False
+
             bmes = list(zip(bmes_tokens, bmes_annotations))
-            if lmin and lmax:
+            if lmin and lmax and not all_merged:
                 bmes.insert(lmax, '^-' * 20 + 'STOP' + '-^' * 20)
                 bmes.insert(lmin, 'v-' * 20 + 'START' + '-v' * 20)
 
@@ -154,7 +181,7 @@ if __name__ == '__main__':
         else:
             for fname in data:
                 with open(os.path.join(args.output_dir, fname + '.bmes'), 'w') as f:
-                    f.write('\n'.join(data[fname]))
+                    f.write('\n\n'.join(data[fname]))
 
     args = parser.parse_args()
     create_bmes_cli(args)
