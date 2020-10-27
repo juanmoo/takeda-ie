@@ -1,0 +1,3 @@
+[submodule "ie-turk-takeda"]
+	path = ie-turk-takeda
+	url = git@github.com:juanmoo/ie-turk-takeda.git
