@@ -12,8 +12,9 @@ def check_matches(labels):
 
     for j, l in enumerate(labels):
         if current_lab != '':
-            if l not in [f'E-{current_lab}', f'M-{current_lab}']: # didn't finish label
-                raise Exception(f'Unable to match {current_lab} in line {current_start}. Failed in line {j}')
+            if l not in [f'E-{current_lab}', f'M-{current_lab}']:  # didn't finish label
+                raise Exception(
+                    f'Unable to match {current_lab} in line {current_start}. Failed in line {j}')
             elif l == f'M-{current_lab}':
                 continue
             elif l == f'E-{current_lab}':
@@ -35,7 +36,7 @@ def check_matches(labels):
                     raise Exception(f'Unknown tag type {t}')
     print('\nLabel Assignment is Valid!\n\n')
     return True
-            
+
 
 # Currently, this function iterates through the document and finds sequences of singleton tags
 # and gives the option of merging them.
@@ -54,7 +55,7 @@ def correct_bmes_document(input_path, output_dir):
         # Skip forward until S-* found
         while i < len(labels) and not labels[i].startswith('S-'):
             i += 1
-        
+
         # S-* series not found
         if not i < len(labels):
             break
@@ -64,8 +65,8 @@ def correct_bmes_document(input_path, output_dir):
             # Skip forward until S-* no longer found
             while j < len(labels) and labels[j] == labels[i]:
                 j += 1
-            
-            if j - i > 1: # Series of labels encountered
+
+            if j - i > 1:  # Series of labels encountered
                 print('-' * 50)
                 print('Should the following tokens be merged? (y or n)')
                 for k in range(i, j):
@@ -79,7 +80,7 @@ def correct_bmes_document(input_path, output_dir):
                     labels[j - 1] = f'E-{lab}'
                     for k in range(i + 1, j - 1):
                         labels[k] = f'M-{lab}'
-            
+
             i = j
     lines = zip(tokens, labels)
     output = ''
@@ -91,8 +92,6 @@ def correct_bmes_document(input_path, output_dir):
 
     with open(os.path.join(output_dir, basename), 'w') as f:
         f.write(output)
-    
-
 
 
 if __name__ == '__main__':
@@ -103,10 +102,12 @@ if __name__ == '__main__':
                         help='Path to output directory.')
 
     def correct_cli(args):
-        files = [f for f in os.listdir(args.input_dir) if f.lower().endswith('.bmes')]
+        files = [f for f in os.listdir(
+            args.input_dir) if f.lower().endswith('.bmes')]
         for f in files:
             print(f'\n\n{"=" * 100}\nProcessing document: \'{f}\'\n')
-            correct_bmes_document(os.path.join(args.input_dir, f), args.output_dir)
+            correct_bmes_document(os.path.join(
+                args.input_dir, f), args.output_dir)
 
     args = parser.parse_args()
     correct_cli(args)

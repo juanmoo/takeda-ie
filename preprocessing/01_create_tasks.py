@@ -12,7 +12,6 @@ tokenizer = nlp.Defaults.create_tokenizer(nlp)
 
 # ----- Utils ----- #
 
-
 def tokenize(text):
     text = ' '.join([t.text for t in tokenizer(text)])
     text = re.sub('\n+', '\n', text)
