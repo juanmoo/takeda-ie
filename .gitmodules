@@ -1,6 +1,6 @@
 [submodule "ie-turk-takeda"]
 	path = ie-turk-takeda
 	url = git@github.com:juanmoo/ie-turk-takeda.git
-[submodule "BiLSTM Baseline"]
+[submodule "NCRFpp"]
 	path = NCRFpp
 	url = git@github.com:juanmoo/NCRFpp.git
