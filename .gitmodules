@@ -4,3 +4,6 @@
 [submodule "NCRFpp"]
 	path = NCRFpp
 	url = git@github.com:juanmoo/NCRFpp.git
+[submodule "localturk"]
+	path = localturk
+	url = git@github.com:juanmoo/localturk.git
