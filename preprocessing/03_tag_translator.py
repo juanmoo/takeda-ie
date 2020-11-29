@@ -212,7 +212,7 @@ if __name__ == '__main__':
     # Set translation handlers
     handlers = dict()
     handlers[('STRUCT', 'BMES')] = struct_to_bmes
-    handlers[('STRUCT', 'BIO')] = struct_to_bmes
+    handlers[('STRUCT', 'BIO')] = struct_to_bio
     handlers[('BIO', 'BMES')] = bio_to_bmes
     handlers[('BMES', 'BIO')] = bmes_to_bio
 
