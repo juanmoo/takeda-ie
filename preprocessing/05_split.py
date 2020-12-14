@@ -13,8 +13,11 @@ import json
 
 
 class DataProcessor(object):
-    def __init__(self, oversample_rate=3):
+    def __init__(self, oversample_rate=3, random_seed=42):
         self.oversample_rate = oversample_rate
+        self.random_seed = random_seed
+
+        random.seed(self.random_seed)
 
     def get_full_dataset(self, input_path):
         # Normalize Path
