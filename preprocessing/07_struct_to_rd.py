@@ -10,7 +10,7 @@ from tqdm import tqdm
 
 # Global Initialization
 default_trigger = 'DESC'
-default_foi = ['STYPE', 'AUTH', 'METRIC', 'RESULTS']
+default_foi = ['METRIC', 'RESULTS']
 nlp = English()
 nlp.add_pipe(nlp.create_pipe('sentencizer'))
 
