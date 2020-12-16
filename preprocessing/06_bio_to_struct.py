@@ -22,8 +22,6 @@ STRUCT:
 
 import argparse
 import os
-from os.path import basename
-import pandas as pd
 import re
 import json
 
