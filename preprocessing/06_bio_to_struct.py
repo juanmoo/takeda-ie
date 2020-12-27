@@ -25,6 +25,17 @@ import os
 import re
 import json
 
+# Reverse Label map
+default_label_map = {
+    'authors': 'AUTH',
+    'study_type': 'STYPE',
+    'arm_description': 'DESC',
+    'arm_dosage': 'DOSAGE',
+    'arm_efficacy_metric': 'METRIC',
+    'arm_efficacy_results': 'RESULTS'
+}
+default_reverse_map = {default_label_map[k]:k for k in default_label_map}
+
 def load_bio_doc(path):
     path = os.path.realpath(path)
     path = os.path.normpath(path)
@@ -56,7 +67,8 @@ def load_bio_doc(path):
         for j, l in enumerate(labels):
             if not l.endswith(prev_lab):
                 if prev_lab != 'O':
-                    span_key = f'{prev_lab}-spans'
+                    lab = default_reverse_map.get(prev_lab, prev_lab)
+                    span_key = f'{lab}-spans'
                     if span_key not in par_dict:
                         par_dict[span_key] = []
                     par_dict[span_key].append((prev_start, j))
@@ -64,7 +76,8 @@ def load_bio_doc(path):
                 prev_start = j
         
         if prev_lab != 'O':
-            span_key = f'{prev_lab}-spans'
+            lab = default_reverse_map.get(prev_lab, prev_lab)
+            span_key = f'{lab}-spans'
             if span_key not in par_dict:
                 par_dict[span_key] = []
             par_dict[span_key].append((prev_start, len(tokens)))
