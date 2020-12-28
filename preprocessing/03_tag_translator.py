@@ -244,9 +244,15 @@ if __name__ == '__main__':
     handler = handlers[direction]
 
     # Load Inputs
-    base_path = os.path.realpath(os.path.normpath(args.input_path))
-    fnames = [f for f in os.listdir(base_path) if f.lower().endswith(
-        supported_formats[args.source.upper()])]
+    if os.path.isdir(args.input_path):
+        base_path = os.path.realpath(os.path.normpath(args.input_path))
+        fnames = [f for f in os.listdir(base_path) if f.lower().endswith(
+            supported_formats[args.source.upper()])]
+    else:
+        path = os.path.normpath(args.input_path)
+        path = os.path.realpath(path)
+        base_path, fname = os.path.split(path)
+        fnames = [fname]
 
     # Transform and Save
     for f in tqdm.tqdm(fnames):
