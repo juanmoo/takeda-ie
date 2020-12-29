@@ -26,7 +26,7 @@ class DataProcessor(object):
 
         # Read Files
         fnames = [f for f in os.listdir(input_path) if f.lower().split(
-            '.')[-1] in ['bmes', 'conll']]
+            '.')[-1] in ['bmes', 'conll', 'bio']]
         files = [codecs.open(os.path.join(input_path, fname), 'rb',
                              encoding='utf-8', errors='ignore').read().strip() for fname in fnames]
 
