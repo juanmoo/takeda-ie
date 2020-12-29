@@ -159,7 +159,7 @@ class DataProcessor(object):
         output = ''
         for toks, labs in zip(par_tokens, par_labels):
             for t, l in zip(toks, labs):
-                output += '{:<20}{}\n'.format(t, l)
+                output += '{}\t{}\n'.format(t, l)
             output += '\n'
         return output
 
