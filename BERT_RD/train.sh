@@ -1,16 +1,21 @@
-gpu="0,1,2,3"
+gpu="0,2,3"
+gpu=""
 
 # task: pos | ner
 export TASK_NAME=ner
 tagset=takeda
-export TASK_DIR="/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/01_takeda_repo/data/v2_and_3/rd_split"
+#export TASK_DIR="/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/02_workdir_takeda/02_pilot/10_data/v2_corrected_all/rd_bio/v3/x1"
+export TASK_DIR=$1
 export MODEL_DIR=bert-base-cased
 
-output_dir="/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/01_takeda_repo/BERT_RD/output_dir"
+#output_dir="/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/02_workdir_takeda/02_pilot/14_bert_rd_output/x1"
+output_dir=$2
 
-n_epochs=2
+n_epochs=20
 
-CUDA_VISIBLE_DEVICES=${gpu} python run_tagging.py \
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
+
+CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --model_name_or_path ${MODEL_DIR} \
     --task_name $TASK_NAME \
     --tagset ${tagset} \

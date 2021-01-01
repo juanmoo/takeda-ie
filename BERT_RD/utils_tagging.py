@@ -137,11 +137,8 @@ class NerProcessor(DataProcessor):
         elif self.tagset == "takeda":
             return [
                 "O",
-                # "B-authors", "I-authors",
-                # "B-study_type", "I-study_type",
                 "B-arm_efficacy_metric", "I-arm_efficacy_metric",
                 "B-arm_efficacy_results", "I-arm_efficacy_results",
-                # "B-arm_description", "I-arm_description",
                 "B-arm_dosage", "I-arm_dosage",
                 "[CLS]",
                 "[SEP]"
@@ -228,9 +225,15 @@ def convert_examples_to_features(examples, label_list, max_seq_length,
         p2_p = tokens_a.index("[P2]") + 1
 
         tokens = [cls_token] + tokens_a + [sep_token]
-        if len(tokens) > max_seq_length:
+
+        if len(tokens) > 512:
+            logger.info("Sentence length exceeds max possible length. Skipping!")
+            continue
+
+        elif len(tokens) > max_seq_length:
             logger.info("Sentence length exceeds max_seq_length")
             max_seq_length = len(tokens)
+        
         segment_ids = [sequence_a_segment_id] * len(tokens)
 
         input_ids = tokenizer.convert_tokens_to_ids(tokens)
