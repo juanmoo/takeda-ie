@@ -1,26 +1,27 @@
-gpu=0
+gpu="0,1,2,3,4,5,6,7"
 
 #task: pos | ner
 export TASK_NAME=ner
-tagset=reaction
+tagset=takeda
 
-export TASK_DIR=/data/rsg/nlp/sibanez/00_MedTrialXtr/02_runs/00_NER/03_run_split_juan_80-20
 
-#export MODEL_DIR=/data/rsg/chemistry/sibanez/01_chem_nlp/00_pretrained/chembert_v3.0/
+DATA_DIR=$1
+TASK_DIR=$2
+
 export MODEL_DIR=$TASK_DIR
-
 OUTPUT_DIR=$TASK_DIR
 output_file="test.tags.preds"
+n_epochs=3 
+ 
+DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
-n_epochs=3
-
-CUDA_VISIBLE_DEVICES=${gpu} python3 run_tagging.py \
+CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --model_name_or_path ${MODEL_DIR} \
     --task_name $TASK_NAME \
     --tagset ${tagset} \
     --do_eval \
     --eval_on_test \
-    --data_dir $TASK_DIR \
+    --data_dir $DATA_DIR\
     --max_seq_length 512 \
     --per_gpu_eval_batch_size=8   \
     --per_gpu_train_batch_size=8   \
@@ -33,8 +34,8 @@ CUDA_VISIBLE_DEVICES=${gpu} python3 run_tagging.py \
     # --local_rank 2
 
 # merge "test.pred"
-test_file=${TASK_DIR}/test.txt
-python3 compile_outputs.py \
+test_file=${DATA_DIR}/test.txt
+python ${DIR}/compile_outputs.py \
     --test_file ${test_file} \
     --tag_file ${OUTPUT_DIR}/${output_file} \
     --output ${OUTPUT_DIR}/test.preds
