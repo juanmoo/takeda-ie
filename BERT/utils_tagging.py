@@ -8,6 +8,7 @@ import os
 import sys
 from io import open
 from collections import namedtuple
+import re
 
 from seqeval.metrics import f1_score, precision_score, recall_score, accuracy_score, classification_report
 
@@ -82,6 +83,7 @@ class DataProcessor(object):
             sentence = []
             for line in f:
                 line = line.strip()
+                line = re.sub('\s+', '\t', line)
                 if len(line) == 0:
                     if len(sentence) > 0:
                         data.append(sentence)
