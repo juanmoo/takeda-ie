@@ -134,12 +134,12 @@ class NerProcessor(DataProcessor):
                     "[SEP]"]
         elif self.tagset == 'takeda':
             return ['O',
-                    'B-METRIC','I-METRIC',
-                    'B-DESC','I-DESC',
-                    'B-DOSAGE','I-DOSAGE',
-                    'B-STYPE','I-STYPE',
-                    'B-AUTH','I-AUTH',
-                    'B-RESULTS','I-RESULTS',
+                    'B-arm_efficacy_metric','I-arm_efficacy_metric',
+                    'B-arm_dosage','I-arm_dosage',
+                    'B-arm_description','I-arm_description',
+                    'B-study_type','I-study_type',
+                    'B-authors','I-authors',
+                    'B-arm_efficacy_results','I-arm_efficacy_results',
                     "[CLS]",
                     "[SEP]"]
         else:

@@ -22,12 +22,15 @@ from processing import format
 def train(struct, output_model_dir, **kwargs):
 
     # Default GPU settings
-    gpus = kwargs.get('gpus', "0")
+    gpus = kwargs.get('gpus', "0,1,2,3,4,5,6,7")
+
+    tmp_dir = tempfile.TemporaryDirectory()
 
     # Create BIO annotation files
     bio_dict = format.struct_to_bio(struct, task='ner', **kwargs)
-    data_dir = tempfile.TemporaryDirectory()
-    data_dir_path = data_dir.name
+    data_dir = os.path.join(tmp_dir.name, 'data_dir')
+    os.makedirs(data_dir, exist_ok=True)
+    data_dir_path = data_dir
     train_file_path = os.path.join(data_dir_path, 'train.txt')
 
     train_txts = []
@@ -38,31 +41,35 @@ def train(struct, output_model_dir, **kwargs):
     with open(train_file_path, 'w') as bio_file:
         out = '\n\n'.join(train_txts)
         bio_file.write(out)
-    
-    # Train 
-    output_dir = tempfile.TemporaryDirectory()
-    output_dir_path = output_dir.name
+
+    # Train
+    output_dir = os.path.join(tmp_dir.name, 'output_dir')
+    os.makedirs(output_dir, exist_ok=True)
+    output_dir_path = output_dir
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
-    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
+    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path]
+    print(' '.join(cmd))
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, _ = proc.communicate()
 
-    cmd2 = ['mv', output_dir_path, '/Users/juanmoo/Desktop/']
+    out = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp'
+    cmd2 = ['mv', output_dir_path, out]
     proc = subprocess.run(cmd2)
 
     print(stdout)
-    
 
 
 
-    
 
-    
-    
+
+
+
+
 
 if __name__ == '__main__':
     import json
-    output_model_dir = '/Users/juanmoo/Desktop/model/'
-    with open('/Users/juanmoo/Desktop/changed.json', 'r') as f:
+    output_model_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/model'
+    struct_path = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/changed.json'
+    with open(struct_path, 'r') as f:
         struct = json.load(f)
         train(struct, output_model_dir)
