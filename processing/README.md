@@ -17,7 +17,8 @@ STRUCT-base:
             {
                 'text': <str>,
                 'header': <str>,
-                'location': <str>
+                'location': <str>,
+                'annotated': <boolean>,
             },
             ...
         ]

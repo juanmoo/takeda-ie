@@ -78,6 +78,7 @@ def parse_xml(file_path):
                 'text': p,
                 'head': 'DOCUMENT DESCRIPTION',
                 'position': 'DOCUMENT DESCRIPTION',
+                'annotated': False,
             })
 
         ## Abstract ##
@@ -91,6 +92,7 @@ def parse_xml(file_path):
                 'text': abstract_raw,
                 'head': 'ABSTRACT',
                 'position': 'ABSTRACT',
+                'annotated': False,
             })
 
         ## Main Body ##
@@ -107,6 +109,7 @@ def parse_xml(file_path):
                     'text': tokenize(ptext),
                     'head': head.strip(),
                     'position': f'Paragraph {position}',
+                    'annotated': False,
                 })
                 position += 1
 
