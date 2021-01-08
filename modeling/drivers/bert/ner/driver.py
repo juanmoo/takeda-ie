@@ -5,6 +5,7 @@ BERT NER Driver Module
 import os
 from re import sub
 import sys
+import json
 dir_path = os.path.dirname(os.path.realpath(__file__))
 project_root = '/'.join(dir_path.split('/')[:-4])
 sys.path.append(project_root)
@@ -21,13 +22,16 @@ from processing import format
 
 def train(struct, output_model_dir, **kwargs):
 
+    struct = json.load(open(struct, 'r'))
+
     # Default GPU settings
     gpus = kwargs.get('gpus', "0,1,2,3,4,5,6,7")
 
     tmp_dir = tempfile.TemporaryDirectory()
 
     # Create BIO annotation files
-    bio_dict = format.struct_to_bio(struct, task='ner', **kwargs)
+    kwargs['task'] = 'ner'
+    bio_dict = format.struct_to_bio(struct, **kwargs)
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
     data_dir_path = data_dir
@@ -47,7 +51,7 @@ def train(struct, output_model_dir, **kwargs):
     os.makedirs(output_dir, exist_ok=True)
     output_dir_path = output_dir
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
-    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path]
+    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
     print(' '.join(cmd))
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
     stdout, _ = proc.communicate()
@@ -57,12 +61,6 @@ def train(struct, output_model_dir, **kwargs):
     proc = subprocess.run(cmd2)
 
     print(stdout)
-
-
-
-
-
-
 
 
 

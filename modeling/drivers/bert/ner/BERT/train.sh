@@ -1,4 +1,4 @@
-gpu="0,1,2,3"
+#gpu="0,1,2,3"
 
 # task: pos | ner
 export TASK_NAME=ner
@@ -8,7 +8,7 @@ export MODEL_DIR=bert-base-cased
 DATA_DIR=$1
 OUTPUT_DIR=$2
 TASK_DIR=$OUTPUT_DIR
-#gpu="${3}""
+gpu="${3}"
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 n_epochs=10
