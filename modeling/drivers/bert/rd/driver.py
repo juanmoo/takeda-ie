@@ -47,19 +47,17 @@ def train(struct, output_model_dir, **kwargs):
         bio_file.write(out)
 
     # Train
-    output_dir = os.path.join(tmp_dir.name, 'output_dir')
+    output_dir = os.path.join(tmp_dir.name, 'model_dir')
     os.makedirs(output_dir, exist_ok=True)
     output_dir_path = output_dir
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
     cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
     print(' '.join(cmd))
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, _ = proc.communicate()
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
 
     cmd2 = ['mv', output_dir_path, output_model_dir]
     proc = subprocess.run(cmd2)
-
-    print(stdout)
 
 
 

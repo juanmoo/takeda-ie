@@ -169,13 +169,12 @@ def process_document(doc_struct, foi=default_foi, trigger=default_trigger, use_s
             data.append(tagged_segment)
 
     bio_pars = ['\n'.join(['{}\t{}'.format(t, l) for (t, l) in par_toks]) for par_toks in data]
-    output = '\n\n'.join(bio_pars)
 
-    return output
+    return bio_pars
 
 def struct_to_rd_bio(struct, label_map={}, use_scent=False, **kwargs):
     doc_structs = struct['documents']
-    output = {}
+    output = dict()
 
     for doc_id in doc_structs:
         output[doc_id] = process_document(doc_structs[doc_id], use_sent=use_scent)

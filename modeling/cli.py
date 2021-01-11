@@ -3,6 +3,7 @@ Main entry point to use modeling CLI.
 '''
 
 import os
+import json
 import argparse
 import drivers
 
@@ -40,6 +41,15 @@ def train_cli(args):
 
     train_func(**kwargs)
 
+    ## Save Model metadata along w/ model
+    assert(os.path.isdir(model_dir))
+    metadata = {
+        'architecture': model,
+        'task': task,
+    }
+    metadata_file = os.path.join(model_dir, 'metadata.json')
+    with open(metadata_file, 'w') as md_file:
+        json.dump(metadata, md_file, indent=4)
 
 if __name__ == '__main__':
     # Main Parser

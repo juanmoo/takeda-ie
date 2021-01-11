@@ -53,14 +53,11 @@ def train(struct, output_model_dir, **kwargs):
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
     cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
     print(' '.join(cmd))
-    proc = subprocess.Popen(cmd, stdout=subprocess.PIPE, stderr=subprocess.STDOUT)
-    stdout, _ = proc.communicate()
+    proc = subprocess.Popen(cmd)
+    proc.communicate()
 
     cmd2 = ['mv', output_dir_path, output_model_dir]
     proc = subprocess.run(cmd2)
-
-    print(stdout)
-
 
 
 if __name__ == '__main__':
