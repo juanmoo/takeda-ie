@@ -30,7 +30,7 @@ def train(struct, output_model_dir, **kwargs):
     tmp_dir = tempfile.TemporaryDirectory()
 
     # Create BIO annotation files
-    kwargs['task'] = 'ner'
+    kwargs['task'] = 'rd'
     bio_dict = format.struct_to_bio(struct, **kwargs)
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)

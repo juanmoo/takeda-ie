@@ -27,6 +27,8 @@ def train_cli(args):
     if model == 'bert':
         if task == 'ner':
             train_func = drivers.bert.ner.train
+        elif task == 'rd':
+            train_func = drivers.bert.rd.train
 
     # gpus
     gpus = ','.join([str(j) for j in range(args.gpu_count)])
@@ -53,7 +55,7 @@ if __name__ == '__main__':
     train_parser.add_argument('model_dir', type=str,
                             help='Path of model directory')
     train_parser.add_argument('--model', type=str, default='bert', help='Model architecture (bert,)')
-    train_parser.add_argument('--task', type=str, default='ner', help='Task (ner, )')
+    train_parser.add_argument('--task', type=str, default='ner', help='Task (ner, rd)')
 
     train_parser.set_defaults(handler=train_cli)
 
