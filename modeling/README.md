@@ -23,7 +23,8 @@ Positional:
 
 Optional:
 * ``--model``: Model architecture (bert, lstm).
-* ``--taks``: Task to be solved (ner, rd).
+* ``--task``: Task to be solved (ner, rd).
+* ``--output_path``: Path of output struct. If not given, predictions will be stored in place.
 
 Example: 
 ```bash

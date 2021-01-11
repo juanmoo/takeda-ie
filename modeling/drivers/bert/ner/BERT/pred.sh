@@ -9,7 +9,6 @@ MODEL_DIR=$2
 OUTPUT_DIR=$3
 # TASK_DIR=$2
 
-# export MODEL_DIR=$TASK_DIR
 # OUTPUT_DIR=$TASK_DIR
 output_file="test.tags.preds"
 n_epochs=3 

@@ -182,15 +182,34 @@ def struct_to_rd_bio(struct, label_map={}, use_scent=False, **kwargs):
     return output
 
 
+def struct_to_bio_empty(struct, sepate_docs=False, **kwargs):
+    doc_structs = struct['documents']
+    output = dict()
+
+    for doc_id in doc_structs:
+        doc_struct = doc_structs[doc_id]
+        doc_pars = []
+
+        for par in doc_struct['paragraphs']:
+            text = par['text']
+            tokens = text.strip().split(' ')
+            par_text = '\n'.join(tokens)
+            doc_pars.append(par_text)
+        
+        doc_text = '\n\n'.join(doc_pars)
+        output[doc_id] = doc_text
+    
+    return output
+
 
 # if __name__ == '__main__':
 #     import json
 
-#     infile = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/changed.json'
-#     out_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/rd_test/'
+#     infile = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/struct.json'
+#     out_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/test/'
 
 #     struct = json.load(open(infile, 'r'))
-#     rd_out = struct_to_rd_bio(struct)
+#     rd_out = struct_to_bio_empty(struct)
 
 #     for doc_id in rd_out:
 #         fname = os.path.join(out_dir, doc_id + '.bio')
