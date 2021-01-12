@@ -28,7 +28,7 @@ def train(struct_path, output_model_dir, **kwargs):
     struct = json.load(open(struct_path, 'r'))
 
     # Default GPU settings
-    gpus = kwargs.get('gpus', "0,1,2,3,4,5,6,7")
+    gpus = kwargs.get('gpus', "")
 
     tmp_dir = tempfile.TemporaryDirectory()
 
