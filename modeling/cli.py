@@ -70,11 +70,14 @@ def pred_cli(args):
     metadata = None
     with open(metadata_path, 'r') as md_file:
         metadata = json.load(md_file)
+    metadata['model_dir'] = model_dir
 
     model = metadata['architecture']
     task = metadata['task']
     kwargs['model'] = model
     kwargs['task'] = task
+    kwargs['metadata'] = metadata
+
 
     pred_func = None
     if model == 'bert':
