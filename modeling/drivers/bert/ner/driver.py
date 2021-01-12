@@ -6,6 +6,8 @@ import os
 from re import sub
 import sys
 import json
+#from sklearn.metrics import f1_score, recall_score, precision_score
+
 dir_path = os.path.dirname(os.path.realpath(__file__))
 project_root = '/'.join(dir_path.split('/')[:-4])
 sys.path.append(project_root)
@@ -115,7 +117,28 @@ def pred(struct_path, model_dir, **kwargs):
             assert(len(pars_tags) == len(struct['documents'][doc_id]['paragraphs']))
 
             for j, p in enumerate(struct['documents'][doc_id]['paragraphs']):
-                p['preds'] = pars_tags[j]
+                p['ner_preds'] = pars_tags[j]
+            
+    # Get all predictions
+    ner_annotations = []
+    ner_predictions = []
+
+    for doc_id in struct['documents']:
+        doc_struct = struct['documents'][doc_id]
+        for par in doc_struct['paragraphs']:
+            ner_annotations.extend(par['bio_tags'])
+            ner_predictions.extend(par['ner_preds'])
+    
+    '''
+    precision = precision_score(ner_annotations, ner_predictions)
+    recall = recall_score(ner_annotations, ner_predictions)
+    f1 = f1_score(ner_annotations, ner_predictions)
+
+    print('Precision: ', precision)
+    print('Recall: ', recall)
+    print('F1: ', f1)
+    '''
+
     return struct
 
 
