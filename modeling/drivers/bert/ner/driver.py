@@ -148,11 +148,8 @@ def pred(struct_path, model_dir, **kwargs):
     for doc_id in ner_preds_dict:
         doc_struct = struct['documents'][doc_id]
 
-        if ('annotated' not in doc_struct) or (not doc_struct['annotated']):
-            continue
-
         for j, par in enumerate(doc_struct['paragraphs']):
-            if par['annotated']:
+            if ('annotated' in par) and par['annotated']:
                 ner_annotations.extend(par['bio_annotations'])
                 ner_predictions.extend(ner_preds_dict[doc_id][j])
             assert(len(ner_annotations) == len(ner_predictions))
