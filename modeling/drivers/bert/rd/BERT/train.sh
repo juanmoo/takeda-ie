@@ -9,7 +9,7 @@ export OUTPUT_DIR=${2}
 export gpu=${3}
 
 export MODEL_DIR=bert-base-cased
-n_epochs=1
+n_epochs=60
 
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
