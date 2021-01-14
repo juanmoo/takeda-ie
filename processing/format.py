@@ -76,6 +76,26 @@ def struct_to_ner_bio(struct, label_map={}, **kwargs):
         bmes_list.append(paragraphs_bmes)
     return dict(zip(fnames, bmes_list))
 
+# Empty NER
+def struct_to_bio_empty(struct, **kwargs):
+    doc_structs = struct['documents']
+    output = dict()
+
+    for doc_id in doc_structs:
+        doc_struct = doc_structs[doc_id]
+        doc_pars = []
+
+        for par in doc_struct['paragraphs']:
+            text = par['text']
+            tokens = text.strip().split(' ')
+            par_text = '\n'.join(tokens)
+            doc_pars.append(par_text)
+        
+        doc_text = '\n\n'.join(doc_pars)
+        output[doc_id] = doc_text
+    
+    return output
+
 
 ## RD ####
 default_trigger = 'arm_description'
@@ -181,25 +201,84 @@ def struct_to_rd_bio(struct, label_map={}, use_scent=False, **kwargs):
 
     return output
 
+def process_document_rd_blank(doc_struct, preds, foi=default_foi, trigger=default_trigger, use_ner_preds=True, use_sent=False, window=1):
+    data = []
 
-def struct_to_bio_empty(struct, sepate_docs=False, **kwargs):
+    for par, pred in zip(doc_struct['paragraphs'], preds):
+        pred = pred['spans']
+
+        # Skip paragraphs w/o trigger entities
+
+        if trigger not in pred or len(pred[trigger]) == 0:
+            continue
+
+        text = par['text']
+        tokens = text.strip().split(' ')
+        sentences = get_sentences(text)
+
+        sent_boundaries = [0]
+        for sent in sentences:
+            sent_boundaries.append(
+                len(sent.strip().split(' ')) + sent_boundaries[-1])
+
+        for span in pred[trigger]:
+
+            # copy tokens
+            tagged_text = list(tokens)
+
+            desc_span_start, desc_span_end = span
+            tagged_text.insert(desc_span_start, "[P1]")
+            tagged_text.insert(desc_span_end + 1, "[P2]")
+
+            if use_sent:
+                seg_start, seg_end = get_segment(span, sent_boundaries, window=window)
+                tagged_segment = tagged_text[seg_start:(seg_end+2)]
+            else:
+                tagged_segment = tagged_text
+
+            data.append(tagged_segment)
+
+    bio_pars = ['\n'.join(par_toks) for par_toks in data]
+    doc_bio = '\n\n'.join(bio_pars)
+
+    return doc_bio
+
+def struct_to_rd_bio_empty(struct, label_map={}, use_scent=False, use_ner_preds=True, **kwargs):
     doc_structs = struct['documents']
     output = dict()
 
     for doc_id in doc_structs:
-        doc_struct = doc_structs[doc_id]
-        doc_pars = []
+        doc_preds = struct['ner_preds'][-1][doc_id]
+        output[doc_id] = process_document_rd_blank(doc_structs[doc_id], doc_preds, use_ner_preds=use_ner_preds, use_sent=use_scent)
 
-        for par in doc_struct['paragraphs']:
-            text = par['text']
-            tokens = text.strip().split(' ')
-            par_text = '\n'.join(tokens)
-            doc_pars.append(par_text)
-        
-        doc_text = '\n\n'.join(doc_pars)
-        output[doc_id] = doc_text
-    
     return output
+
+# Utils #
+def make_spans(tags, all_labels=set()):
+    labels = set() | all_labels
+
+    spans = {k:[] for k in labels}
+
+    i = 0
+    while i < len(tags):
+        # skip all irrelevant tags
+        while i < len(tags) and tags[i][2:] not in labels:
+            i += 1
+
+        if i >= len(tags):
+            break
+        
+        # Find end of span
+        current_tag = tags[i][2:]
+        assert(current_tag in spans)
+
+        j = i + 1
+        while j < len(tags) and tags[j].endswith(current_tag) and (not tags[j].startswith('B-')):
+            j += 1
+        spans[current_tag].append((i, j))
+
+        i = j
+    return spans
 
 
 # if __name__ == '__main__':

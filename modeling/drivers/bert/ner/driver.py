@@ -116,6 +116,9 @@ def pred(struct_path, model_dir, **kwargs):
             lines = [l.strip() for l in tags_file.readlines()]
             pars_tags = []
 
+            # Get all labels in documents
+            doc_labs = set([l.replace('B-', '').replace('I-', '') for l in lines if l not in ['O', '']])
+
             i = 0
             while i < len(lines):
                 # Skip any empty lines
@@ -135,7 +138,10 @@ def pred(struct_path, model_dir, **kwargs):
             assert(len(pars_tags) == len(
                 struct['documents'][doc_id]['paragraphs']))
 
-            ner_preds_dict[doc_id] = pars_tags
+            ner_preds_dict[doc_id] = [{
+                'tags': pars_tags[j],
+                'spans': format.make_spans(pars_tags[j], all_labels=doc_labs)
+            } for j in range(len(pars_tags))]
     
     struct['ner_preds'].append(ner_preds_dict)
 
@@ -151,7 +157,7 @@ def pred(struct_path, model_dir, **kwargs):
         for j, par in enumerate(doc_struct['paragraphs']):
             if ('annotated' in par) and par['annotated']:
                 ner_annotations.extend(par['bio_annotations'])
-                ner_predictions.extend(ner_preds_dict[doc_id][j])
+                ner_predictions.extend(ner_preds_dict[doc_id][j]['tags'])
             assert(len(ner_annotations) == len(ner_predictions))
     
     labels = list(set(ner_annotations) - {"O"})

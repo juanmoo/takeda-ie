@@ -84,7 +84,7 @@ def pred_cli(args):
         if task == 'ner':
             pred_func = drivers.bert.ner.pred
         elif task == 'rd':
-            raise Exception('Unknown/unsuported architecture')
+            pred_func = drivers.bert.rd.pred
         else:
             raise Exception('Unknown/unsuported architecture')
     elif model == 'lstm':
