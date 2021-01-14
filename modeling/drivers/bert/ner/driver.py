@@ -41,11 +41,24 @@ def train(struct_path, output_model_dir, **kwargs):
     data_dir_path = data_dir
     train_file_path = os.path.join(data_dir_path, 'train.txt')
 
+    oversample_rate = kwargs.get('oversample_rate', 1)
+    kwargs['oversample_rate'] = oversample_rate
+    
     train_txts = []
     for doc_id in bio_dict:
         pars = bio_dict[doc_id]
-        train_txts.extend(pars)
+        oversampled_pars = []
+        for par in pars:
+            lines = par.split('\n')
+            _, ptoks = zip(*[l.split(' ') for l in lines])
+            ptoks = set(ptoks)
 
+            # append oversample_count if non-zero labels
+            rcount = 1 if len(ptoks) == 1 else oversample_rate
+            for _ in range(rcount):
+                oversampled_pars.append(par)
+        train_txts.extend(oversampled_pars)
+    
     with open(train_file_path, 'w') as bio_file:
         out = '\n\n'.join(train_txts)
         bio_file.write(out)

@@ -122,6 +122,7 @@ if __name__ == '__main__':
         '--model', type=str, default='bert', help='Model architecture (bert,)')
     train_parser.add_argument(
         '--task', type=str, default='ner', help='Task (ner, rd)')
+    train_parser.add_argument('--oversample_rate', type=int, default=1, help='Oversampling rate to be used during training.')
     train_parser.set_defaults(handler=train_cli)
 
     # Pred Parser
