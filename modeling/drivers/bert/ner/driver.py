@@ -4,11 +4,13 @@ BERT NER Driver Module
 # Get file's directory to use bash scripts and relative imports.
 import os
 from re import sub
+import re
 import sys
 import json
 from uuid import uuid4 as uuid
 from tqdm import tqdm
 from sklearn.metrics import f1_score, recall_score, precision_score
+from functools import reduce
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 project_root = '/'.join(dir_path.split('/')[:-4])
@@ -85,7 +87,8 @@ def pred(struct_path, model_dir, **kwargs):
 
     # Create Dataset
     tmp_dir = tempfile.TemporaryDirectory()
-    data_dir = os.path.join(tmp_dir.name, 'data_dir')
+    tmp_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/tmp'
+    data_dir = os.path.join(tmp_dir, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
 
     blank_txts = format.struct_to_bio_empty(struct)
@@ -113,8 +116,10 @@ def pred(struct_path, model_dir, **kwargs):
     ner_preds_dict = dict()
 
     # Make prediction per documents
+    ner_labs = set()
     print('Making document predictions...')
     for doc_id in tqdm(blank_txts):
+    # for doc_id in tqdm(struct['documents']):
         doc_data_dir = os.path.join(data_dir, doc_id)
         doc_output_dir = doc_data_dir
         pred_cmd = os.path.join(dir_path, 'BERT', 'pred.sh')
@@ -123,14 +128,17 @@ def pred(struct_path, model_dir, **kwargs):
         proc.communicate()
 
         tags_path = os.path.join(doc_output_dir, 'test.tags.preds')
+        doc_tags_path = os.path.join(doc_output_dir, 'test.preds')
         doc_struct = struct['documents'][doc_id]
 
-        with open(tags_path, 'r') as tags_file:
+        with open(doc_tags_path, 'r') as tags_file:
             lines = [l.strip() for l in tags_file.readlines()]
+
+            pars_toks = []
             pars_tags = []
 
             # Get all labels in documents
-            doc_labs = set([l.replace('B-', '').replace('I-', '') for l in lines if l not in ['O', '']])
+            # doc_labs = set([l.replace('B-', '').replace('I-', '') for l in lines if l not in ['O', '']])
 
             i = 0
             while i < len(lines):
@@ -143,15 +151,34 @@ def pred(struct_path, model_dir, **kwargs):
                 while j < len(lines) and lines[j] != '':
                     j += 1
                 if j > i:
-                    pars_tags.append(lines[i:j])
+                    ptoks = []
+                    ptags = []
+                    for l in lines[i:j]:
+                        l = re.sub('\s+', ' ', l).strip()
+                        l = l.split(' ')
+                        l = l + (['O'] * (2 - len(l)))
+                        tok, tag = l
+                        ptags.append(tag)
+                        ptoks.append(tok)
+
+                    pars_tags.append(ptags)
+                    pars_toks.append(ptoks)
+
 
                 i = j
 
             # num paragraphs == num of paragraph preds
-            assert(len(pars_tags) == len(
-                struct['documents'][doc_id]['paragraphs']))
+            print(doc_id)
+            print(len(pars_tags))
+            print(len(struct['documents'][doc_id]['paragraphs']))
+
+            # Get document labels
+            doc_labs = list(reduce(lambda a,b: a + b, pars_tags))
+            doc_labs = set([l[2:] for l in doc_labs if l[:2] in ['B-', 'I-']])
+            ner_labs |= doc_labs
 
             ner_preds_dict[doc_id] = [{
+                'toks': pars_toks[j],
                 'tags': pars_tags[j],
                 'spans': format.make_spans(pars_tags[j], all_labels=doc_labs)
             } for j in range(len(pars_tags))]
@@ -166,11 +193,23 @@ def pred(struct_path, model_dir, **kwargs):
 
     for doc_id in ner_preds_dict:
         doc_struct = struct['documents'][doc_id]
+        preds = ner_preds_dict[doc_id]
 
-        for j, par in enumerate(doc_struct['paragraphs']):
+        pred_idx = 0
+        for par in doc_struct['paragraphs']:
+            if par['text'].split(' ') == preds[pred_idx]['toks']:
+                print('Match!')
+                pred = preds[pred_idx]
+                pred_idx += 1
+            else:
+                # print('Not match!')
+                # print(preds[pred_idx])
+                continue
+
             if ('annotated' in par) and par['annotated']:
                 ner_annotations.extend(par['bio_annotations'])
-                ner_predictions.extend(ner_preds_dict[doc_id][j]['tags'])
+                ner_predictions.extend(pred['tags'])
+                
             assert(len(ner_annotations) == len(ner_predictions))
     
     labels = list(set(ner_annotations) - {"O"})

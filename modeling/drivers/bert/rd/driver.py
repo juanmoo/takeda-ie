@@ -146,15 +146,6 @@ def pred(struct_path, model_dir, **kwargs):
                         ptags.append(tag)
                         ptoks.append(tok)
 
-                        # try:
-                        #     tag, tok = l.split(' ')
-                        #     pars_tags.append(tag)
-                        #     pars_toks.append(tok)
-                        # except:
-                        #     print('Error attempting to split:')
-                        #     print(l)
-                        #     exit(0)
-                    # ptoks, ptags = zip(*[sub('\s+', ' ', l.strip()).split(' ') for l in lines[i:j]])
                     pars_tags.append(ptags)
                     pars_toks.append(ptoks)
 

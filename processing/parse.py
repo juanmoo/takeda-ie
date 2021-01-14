@@ -130,7 +130,10 @@ def batch_process(input_dir, output_file, **kwargs):
         for ifile in input_files:
             structs.append(parse_xml(ifile))
 
-    structs = {el['document_id']: el for el in structs}
+    doc_structs = {el['document_id']: el for el in structs}
+    structs = {
+        'documents': doc_structs,
+    }
 
     # Make directories to output file if they don't already exist.
     base_dir = os.path.dirname(output_file)

@@ -23,6 +23,5 @@ CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --num_train_epochs ${n_epochs} \
     --output_dir ${OUTPUT_DIR} \
     --overwrite_output_dir \
-    --evaluate_during_training \
     --logging_steps 200 \
     --save_steps -1

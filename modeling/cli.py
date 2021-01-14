@@ -47,6 +47,7 @@ def train_cli(args):
     metadata = {
         'architecture': model,
         'task': task,
+        'oversample_rate': args.oversample_rate,
     }
     metadata_file = os.path.join(model_dir, 'metadata.json')
     with open(metadata_file, 'w') as md_file:

@@ -204,9 +204,15 @@ def struct_to_rd_bio(struct, label_map={}, use_scent=False, **kwargs):
 def process_document_rd_blank(doc_struct, preds, foi=default_foi, trigger=default_trigger, use_ner_preds=True, use_sent=False, window=1):
     data = []
 
-    for par, pred in zip(doc_struct['paragraphs'], preds):
-        pred = pred['spans']
+    pred_idx = 0
+    for par in doc_struct['paragraphs']:
+        if par['text'].split(' ') == preds[pred_idx]['toks']:
+            pred = preds[pred_idx]
+            pred_idx += 1
+        else:
+            continue
 
+        pred = pred['spans']
         # Skip paragraphs w/o trigger entities
 
         if trigger not in pred or len(pred[trigger]) == 0:
