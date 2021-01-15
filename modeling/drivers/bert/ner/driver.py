@@ -45,7 +45,7 @@ def train(struct_path, output_model_dir, **kwargs):
 
     oversample_rate = kwargs.get('oversample_rate', 1)
     kwargs['oversample_rate'] = oversample_rate
-    
+
     train_txts = []
     for doc_id in bio_dict:
         pars = bio_dict[doc_id]
@@ -60,7 +60,7 @@ def train(struct_path, output_model_dir, **kwargs):
             for _ in range(rcount):
                 oversampled_pars.append(par)
         train_txts.extend(oversampled_pars)
-    
+
     with open(train_file_path, 'w') as bio_file:
         out = '\n\n'.join(train_txts)
         bio_file.write(out)
@@ -138,8 +138,6 @@ def pred(struct_path, model_dir, **kwargs):
             pars_tags = []
 
             # Get all labels in documents
-            # doc_labs = set([l.replace('B-', '').replace('I-', '') for l in lines if l not in ['O', '']])
-
             i = 0
             while i < len(lines):
                 # Skip any empty lines
@@ -182,7 +180,7 @@ def pred(struct_path, model_dir, **kwargs):
                 'tags': pars_tags[j],
                 'spans': format.make_spans(pars_tags[j], all_labels=doc_labs)
             } for j in range(len(pars_tags))]
-    
+
     struct['ner_preds'].append(ner_preds_dict)
 
     ## Evaluation ##
@@ -209,9 +207,9 @@ def pred(struct_path, model_dir, **kwargs):
             if ('annotated' in par) and par['annotated']:
                 ner_annotations.extend(par['bio_annotations'])
                 ner_predictions.extend(pred['tags'])
-                
+
             assert(len(ner_annotations) == len(ner_predictions))
-    
+
     labels = list(set(ner_annotations) - {"O"})
     labels.sort(key=lambda s:s[::-1])
 
