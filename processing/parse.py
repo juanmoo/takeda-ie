@@ -113,6 +113,20 @@ def parse_xml(file_path):
                 })
                 position += 1
 
+        ## Get Authors ##
+
+        author_list = []
+        for author_div in doc_desc.find_all('author'):
+            auth_name = []
+            for fname in author_div.find_all('forename'):
+                auth_name.append(fname.text)
+            for sname in author_div.find_all('surname'):
+                auth_name.append(sname.text)
+            auth_name = ' '.join(auth_name)
+            if len(auth_name) > 0:
+                author_list.append(auth_name)
+        doc_struct['authors'] = author_list
+
         return doc_struct
 
 
