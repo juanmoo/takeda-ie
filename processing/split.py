@@ -89,13 +89,13 @@ def split_struct(struct_path, output_dir, test_frac=0.2, paragraph_split=False, 
         if len(train_pars) > 0:
             doc_struct_train = {k:doc_struct[k] for k in doc_struct if k != 'paragraphs'}
             doc_struct_train['paragraphs'] = train_pars
-            train_struct['documents'][doc_id] = train_pars
+            train_struct['documents'][doc_id] = doc_struct_train
 
 
         if len(test_pars) > 0:
             doc_struct_test = {k:doc_struct[k] for k in doc_struct if k != 'paragraphs'}
             doc_struct_test['paragraphs'] = test_pars
-            test_struct['documents'][doc_id] = test_pars
+            test_struct['documents'][doc_id] = doc_struct_test
 
     # Save Structs
     basename = os.path.basename(struct_path).replace('.json', '')
