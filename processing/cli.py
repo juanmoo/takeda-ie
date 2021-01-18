@@ -7,8 +7,10 @@ import os
 import parse
 import annotate
 import split
+import table
 
 # Parsing CLI wrapper
+
 
 def xml_parse_cli(args):
     # Normalize Paths
@@ -25,6 +27,8 @@ def xml_parse_cli(args):
     parse.batch_process(**kwargs)
 
 # Annotate CLI wrapper
+
+
 def new_annotation_cli(args):
     struct_path = os.path.normpath(args.struct_path)
     struct_path = os.path.realpath(struct_path)
@@ -36,6 +40,9 @@ def new_annotation_cli(args):
     kwargs['struct_path'] = struct_path
     kwargs['output_path'] = output_path
     annotate.create_annotation_tasks(**kwargs)
+
+# Split Struct CLI
+
 
 def split_cli(args):
     struct_path = os.path.normpath(args.struct_path)
@@ -49,6 +56,23 @@ def split_cli(args):
     kwargs['output_dir'] = output_dir
 
     split.split_struct(**kwargs)
+
+# Make Table CLI
+
+
+def make_table_cli(args):
+    struct_path = os.path.normpath(args.struct_path)
+    struct_path = os.path.realpath(args.struct_path)
+
+    output_path = os.path.normpath(args.output_path)
+    output_path = os.path.realpath(args.output_path)
+
+    kwargs = vars(args)
+    kwargs['struct_path'] = struct_path
+    kwargs['output_path'] = output_path
+
+    table.create_table(**kwargs)
+
 
 if __name__ == '__main__':
     # Main Parser
@@ -80,14 +104,27 @@ if __name__ == '__main__':
     new_annotation_parser.set_defaults(handler=new_annotation_cli)
 
     # Split Parser
-    split_parser = subparsers.add_parser('split', help='Create Train/Test splits')
-    split_parser.add_argument('struct_path', type=str, help='Path to JSON struct.')
-    split_parser.add_argument('output_dir', type=str, help='Path to output directory.')
-    split_parser.add_argument('--test_frac', type=float, default=0.2, help='Fraction of paragraphs to use in test split.')
-    split_parser.add_argument('--paragraph_split', default=False, action='store_true', help='Create split paragraph-wise. By default, splits are made document-wise.')
+    split_parser = subparsers.add_parser(
+        'split', help='Create Train/Test splits')
+    split_parser.add_argument('struct_path', type=str,
+                              help='Path to JSON struct.')
+    split_parser.add_argument('output_dir', type=str,
+                              help='Path to output directory.')
+    split_parser.add_argument('--test_frac', type=float, default=0.2,
+                              help='Fraction of paragraphs to use in test split.')
+    split_parser.add_argument('--paragraph_split', default=False, action='store_true',
+                              help='Create split paragraph-wise. By default, splits are made document-wise.')
     split_parser.set_defaults(handler=split_cli)
 
-    args = parser.parse_args()
+    # Make Table Parser
+    table_parser = subparsers.add_parser(
+        'make_table', help='Create summary table from struct.')
+    table_parser.add_argument('struct_path', type=str,
+                              help='Path to JSON struct.')
+    table_parser.add_argument('output_path', type=str,
+                              help='Path to output spreadsheet.')
+    table_parser.set_defaults(handler=make_table_cli)
 
-    # Execute handler function
+    # Parse and Execute handler function
+    args = parser.parse_args()
     args.handler(args)

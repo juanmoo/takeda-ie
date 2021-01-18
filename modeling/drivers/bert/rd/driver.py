@@ -75,7 +75,6 @@ def pred(struct_path, model_dir, **kwargs):
 
     # Create Dataset
     tmp_dir = tempfile.TemporaryDirectory()
-    tmp_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/tmp'
 
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
