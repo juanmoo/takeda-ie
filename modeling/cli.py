@@ -48,6 +48,7 @@ def train_cli(args):
         'architecture': model,
         'task': task,
         'oversample_rate': args.oversample_rate,
+        'num_epochs': kwargs['num_epochs']
     }
     metadata_file = os.path.join(model_dir, 'metadata.json')
     with open(metadata_file, 'w') as md_file:
@@ -90,18 +91,18 @@ def pred_cli(args):
             raise Exception('Unknown/unsuported architecture')
     elif model == 'lstm':
         raise Exception('Unknown/unsupported architecture')
-    
+
     # gpus
     gpus = ','.join([str(j) for j in range(args.gpu_count)])
     kwargs['gpus'] = gpus
 
     new_struct = pred_func(**kwargs)
-    
+
     if 'output_path' in kwargs:
         out_struct_path = kwargs['output_path']
     else:
         out_struct_path = input_struct
-    
+
     with open(out_struct_path, 'w') as f:
         json.dump(new_struct, f)
 
@@ -124,6 +125,7 @@ if __name__ == '__main__':
     train_parser.add_argument(
         '--task', type=str, default='ner', help='Task (ner, rd)')
     train_parser.add_argument('--oversample_rate', type=int, default=1, help='Oversampling rate to be used during training.')
+    train_parser.add_argument('--num_epochs', type=str, default="10", help='Number of epochs to use during training (default 10).')
     train_parser.set_defaults(handler=train_cli)
 
     # Pred Parser

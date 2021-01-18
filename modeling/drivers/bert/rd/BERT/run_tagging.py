@@ -301,6 +301,22 @@ def evaluate(args, model, tokenizer, label_list, prefix=""):
             labels.append(label_seq)
         return labels
 
+
+    # There was nothing to evaluate
+    if preds is None:
+        if args.write_outputs:
+            output_file = os.path.join(eval_output_dir, args.output_file)
+            with open(output_file, "w") as fw:
+                fw.write('None')
+            logger.info("No predictions (tags) to be saved to: {}".format(output_file))
+        
+        output_eval_file = os.path.join(eval_output_dir, "eval_results.txt")
+        with open(output_eval_file, "w") as writer:
+            logger.info("***** Eval results {} *****".format(prefix))
+            writer.write("No results to report")
+        
+        return {}
+        
     # eval_loss = eval_loss / nb_eval_steps
     preds = np.argmax(preds, axis=2)
     active_eval = (golds != -1) & (golds != cls_token_id) & (golds != sep_token_id)

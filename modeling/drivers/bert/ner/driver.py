@@ -46,6 +46,9 @@ def train(struct_path, output_model_dir, **kwargs):
     oversample_rate = kwargs.get('oversample_rate', 1)
     kwargs['oversample_rate'] = oversample_rate
 
+    num_epochs = kwargs.get('num_epochs', 1)
+    kwargs['num_epochs'] = num_epochs
+
     train_txts = []
     for doc_id in bio_dict:
         pars = bio_dict[doc_id]
@@ -70,7 +73,7 @@ def train(struct_path, output_model_dir, **kwargs):
     os.makedirs(output_dir, exist_ok=True)
     output_dir_path = output_dir
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
-    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
+    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus, num_epochs]
     print(' '.join(cmd))
     proc = subprocess.Popen(cmd, stdout=subprocess.PIPE)
     stdout, _ = proc.communicate()

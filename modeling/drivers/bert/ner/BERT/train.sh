@@ -5,6 +5,7 @@ tagset=takeda
 DATA_DIR=$1
 OUTPUT_DIR=$2
 gpu="${3}"
+num_epochs=$4
 
 export MODEL_DIR=bert-base-cased
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
@@ -19,7 +20,7 @@ CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --max_seq_length 512 \
     --per_gpu_eval_batch_size=8   \
     --per_gpu_train_batch_size=8   \
-    --learning_rate 3e-5 \
+    --learning_rate ${num_epochs} \
     --num_train_epochs ${n_epochs} \
     --output_dir ${OUTPUT_DIR} \
     --overwrite_output_dir \

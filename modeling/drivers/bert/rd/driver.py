@@ -31,11 +31,13 @@ def train(input_struct, model_dir, **kwargs):
     struct = json.load(open(input_struct, 'r'))
 
     # Default GPU settings
-    gpus = kwargs.get('gpus', "0,1,2,3,4,5,6,7")
-
-    tmp_dir = tempfile.TemporaryDirectory()
+    gpus = kwargs.get('gpus', "")
+    num_epochs = kwargs.get('num_epochs', 10)
+    kwargs['num_epochs'] = num_epochs
 
     # Create BIO annotation files
+    tmp_dir = tempfile.TemporaryDirectory()
+
     kwargs['task'] = 'rd'
     bio_dict = format.struct_to_bio(struct, **kwargs)
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
@@ -57,8 +59,8 @@ def train(input_struct, model_dir, **kwargs):
     os.makedirs(output_dir, exist_ok=True)
     output_dir_path = output_dir
     train_cmd = os.path.join(dir_path, 'BERT', 'train.sh')
-    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus]
-    proc = subprocess.Popen(cmd)
+    cmd = ['/bin/bash', train_cmd, data_dir_path, output_dir_path, gpus, num_epochs]
+    proc = subprocess.Popen(cmd, stdout=subprocess.STDOUT, stderr=subprocess.STDOUT)
     proc.communicate()
 
     cmd2 = ['mv', output_dir_path, model_dir]
@@ -73,6 +75,7 @@ def pred(struct_path, model_dir, **kwargs):
 
     # Create Dataset
     tmp_dir = tempfile.TemporaryDirectory()
+    tmp_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/tmp'
 
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
@@ -85,7 +88,7 @@ def pred(struct_path, model_dir, **kwargs):
         test_file_path = os.path.join(doc_dir, 'test.txt')
         with open(test_file_path, 'w') as f:
             f.write(blank_txts[doc_id])
-    
+
     # Get metadata to save along with predictions
     metadata = kwargs.get('metadata', None)
     if not metadata:
@@ -115,9 +118,14 @@ def pred(struct_path, model_dir, **kwargs):
         tags_path = os.path.join(doc_output_dir, 'test.tags.preds')
         doc_tags_path = os.path.join(doc_output_dir, 'test.preds')
         doc_struct = struct['documents'][doc_id]
-    
+
         with open(doc_tags_path, 'r') as tags_file:
             lines = [l.strip() for l in tags_file.readlines()]
+
+            if len(lines) == 0:
+                # No predictions in the document.
+                print('No predictions available for: {}'.format(doc_id))
+                continue
 
             pars_toks = []
             pars_tags = []
@@ -180,7 +188,7 @@ def pred(struct_path, model_dir, **kwargs):
                     else:
                         doc_preds.append(current_entry)
                         current_entry = []
-                
+
                 current_entry.append({
                     'toks': pars_toks[j], # needed for matching paragraph because some pars don't have desc and will be skipped
                     'tags': pars_tags[j],
@@ -189,7 +197,7 @@ def pred(struct_path, model_dir, **kwargs):
 
                 prev_toks = current_toks
                 j += 1
-            
+
             # Last paragraph has at least one entry
             assert(len(current_entry) > 0)
             doc_preds.append(current_entry)
@@ -229,9 +237,12 @@ def pred(struct_path, model_dir, **kwargs):
 
                         rd_predictions.extend(entry_pred_tags)
                         rd_annotations.extend(entry_ann_tags)
-            
+
     labels = [[f'B-{l}', f'I-{l}'] for l in rd_labs]
-    labels = list(reduce(lambda a,b: a + b, labels))
+    new_labels = []
+    for l in labels:
+        new_labels.extend(l)
+    labels = new_labels
     labels.sort(key=lambda s:s[::-1])
 
     if len(rd_annotations) > 0:
