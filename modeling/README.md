@@ -1,17 +1,11 @@
 # Modeling Module
 
 ## Description
-This module provides wrapper functions to train models, maake predictions, and evaluate NER and RD predictions based on data from struct files. For more information about the JSON struct format, please see the processing module.
+This module provides wrapper functions to train models, make predictions, and create a tabular summary of the predicted results. For more information about the JSON struct format, please see the [processing module](../processing/README.md).
 
 ## Usage
 
-#### Summary
-This module will aim to provide three basic actions:
-1. Training: This action will take an annotated struct, a model type, and a task and will output a model folder.
-2. Predict: This action will take a model folder and a struct and will return an a prediction-annotated struct.
-3. Evaluate: This action will take struct containing both manual annotations and prediction-annotations and will provide a summary of the performance of the predictions.
-
-### Task 1: Training
+### Training
 Training: This action will take an annotated struct, a model type, and a task and will output a model folder.
 
 #### Arguments:
@@ -22,11 +16,27 @@ Positional:
 2. ``model_dir``: Directory where trained model should be placed. 
 
 Optional:
-* ``--model``: Model architecture (bert, lstm).
-* ``--task``: Task to be solved (ner, rd).
-* ``--output_path``: Path of output struct. If not given, predictions will be stored in place.
+1. ``--model``: Model architecture (bert, lstm).
+2. ``--task``: Task to be solved (ner, rd).
+3. ``--oversampling_rate``: Oversampling rate to be used during training (default: 1).
+4. ``--num_epochs``: Number of epochs to use during training (default: 10).
 
 Example: 
 ```bash
-python <path-to-modeling-module>/cli.py <path-to-input-struct> <path-to-model_dir> --model=bert --task=ner
+python <path-to-modeling-module>/cli.py <path-to-input-struct> <path-to-model_dir> --model=bert --task=ner --oversampling_rate=5 --num_epochs=15
+```
+
+### Predict
+Command: ``pred``
+
+Positional:
+1. ``input_struct``: Path to JSON struct file.
+2. ``model_dir``: Path of model directory.
+
+Optional:
+1. ``--output_path``: By default, predictions are made in-place. If you'd like save predictions in a separate struct, specify a path using this flag.
+
+Example:
+```bash
+python <path-to-modeling-module>/cli.py <path-to-input-struct> <path-to-model_dir> --output_path <path-to-output-struct>
 ```
