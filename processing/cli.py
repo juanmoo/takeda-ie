@@ -46,10 +46,10 @@ def new_annotation_cli(args):
 
 def split_cli(args):
     struct_path = os.path.normpath(args.struct_path)
-    struct_path = os.path.realpath(args.struct_path)
+    struct_path = os.path.realpath(struct_path)
 
     output_dir = os.path.normpath(args.output_dir)
-    output_dir = os.path.realpath(args.output_dir)
+    output_dir = os.path.realpath(output_dir)
 
     kwargs = vars(args)
     kwargs['struct_path'] = struct_path
@@ -62,16 +62,35 @@ def split_cli(args):
 
 def make_table_cli(args):
     struct_path = os.path.normpath(args.struct_path)
-    struct_path = os.path.realpath(args.struct_path)
+    struct_path = os.path.realpath(struct_path)
 
     output_path = os.path.normpath(args.output_path)
-    output_path = os.path.realpath(args.output_path)
+    output_path = os.path.realpath(output_path)
 
     kwargs = vars(args)
     kwargs['struct_path'] = struct_path
     kwargs['output_path'] = output_path
 
     table.create_table(**kwargs)
+
+
+def load_annotations_cli(args):
+    input_struct = os.path.normpath(args.input_struct)
+    input_struct = os.path.realpath(input_struct)
+
+    annotations_path = os.path.normpath(args.annotations_path)
+    annotations_path = os.path.realpath(annotations_path)
+
+    output_struct = os.path.normpath(args.output_struct)
+    output_struct = os.path.realpath(output_struct)
+
+    kwargs = vars(args)
+    kwargs['input_struct'] = input_struct
+    kwargs['annotations_path'] = annotations_path
+    kwargs['output_struct'] = output_struct
+
+    annotate.load_annotations(**kwargs)
+
 
 
 if __name__ == '__main__':
@@ -124,6 +143,18 @@ if __name__ == '__main__':
     table_parser.add_argument('output_path', type=str,
                               help='Path to output spreadsheet.')
     table_parser.set_defaults(handler=make_table_cli)
+
+    # Load Annotations Parser
+    load_parser = subparsers.add_parser(
+        'load_annotations', help='Load annotation file into struct.')
+    load_parser.add_argument('input_struct', type=str,
+                             help='Path to JSON struct.')
+    load_parser.add_argument('annotations_path', type=str,
+                             help='Path to annotations CSV file.')
+    load_parser.add_argument('output_struct', type=str,
+                              help='Path to output annotated struct.')
+    load_parser.set_defaults(handler=load_annotations_cli)
+    
 
     # Parse and Execute handler function
     args = parser.parse_args()

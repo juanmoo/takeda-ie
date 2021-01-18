@@ -7,6 +7,8 @@ import json
 import codecs
 import pandas as pd
 import csv
+from multiprocessing import Process
+from tqdm import tqdm
 
 # Create annotation tasks
 
@@ -79,3 +81,146 @@ def create_annotation_tasks(struct_path, output_path, **kwargs):
 
     # Create Annotation Task File
     data.to_csv(output_path, quoting=csv.QUOTE_ALL)
+
+def load_annotations(input_struct, annotations_path, output_struct, **kwargs):
+
+    ## Load Struct
+    struct = None
+    with open(input_struct, 'r') as struct_file:
+        struct = json.load(struct_file)
+
+    # Load Annotations
+    annotations = pd.read_csv(annotations_path).fillna('')
+
+    for doc_id in tqdm(struct['documents']):
+        doc_struct = struct['documents'][doc_id]
+        doc_struct = load_document_annotations(doc_struct, annotations)
+        # p = Process(target=load_document_annotations, args=(doc_struct, annotations,))
+        if doc_struct:
+            struct['documents'][doc_id] = doc_struct
+        else:
+            print('Nothing to do for: {}'.format(doc_id))
+
+    # Save annotated struct
+    with open(output_struct, 'w') as output_file:
+        json.dump(struct, output_file, indent=4)
+
+def get_spans(spans_str):
+    idxs = [int(e) for e in spans_str.split(',') if len(e) > 0]
+    assert(len(idxs)%2 == 0)
+    return list(zip(idxs[::2], idxs[1::2]))
+
+
+def load_document_annotations(doc_struct, annotations, **kwargs):
+
+    doc_df = annotations.loc[annotations['doc_id'] == doc_struct['document_id']]
+
+    if len(doc_df) == 0:
+        return False
+
+    non_arm_cols = ['title', 'authors', 'study_type']
+    arm_non_numbered = ['arm_efficacy_metric', 'arm_efficacy_results']
+    arm_numbered  = ['arm_dosage', 'arm_description']
+
+    # Iterate over doc_struct paragraphs
+    for par in doc_struct['paragraphs']:
+        ann_par = annotations.loc[annotations['description'] == par['text']]
+        bio_annotations = ['O'] * len(par['text'].strip().split(' '))
+
+        for j, row in ann_par.iterrows():
+            # Get arm number
+            arm_count = int(row['arm_number'])
+
+            # Get annotations for non-arm columns
+            for k in non_arm_cols:
+                for kp in row.index:
+                    if k in kp:
+                        span_key = f'ann-{k}-spans'
+                        arm_key = f'ann-{k}-arms'
+
+                        spans = []
+                        tags_col = f'{k}-tag'
+                        span_str = row[tags_col]
+                        spans = get_spans(span_str)
+                        if span_key not in par:
+                            par[span_key] = []
+                            par[arm_key] = []
+                        par[span_key].extend(spans)
+                        par[arm_key].extend([-1] * len(spans))
+
+                        if k != 'title':
+                            for i, j in spans:
+                                bio_annotations[i] = f'B-{k}'
+                                for n in range(i + 1, j):
+                                    bio_annotations[n] = f'I-{k}'
+                        break
+
+            # Get annotations for arm non-numbered columns
+            for k in arm_non_numbered:
+                for kp in row.index:
+                    if k in kp:
+                        span_key = f'ann-{k}-spans'
+                        arm_key = f'ann-{k}-arms'
+
+                        spans = []
+                        tags_col = f'{k}-tag'
+                        span_str = row[tags_col]
+                        spans = get_spans(span_str)
+                        if span_key not in par:
+                            par[span_key] = []
+                            par[arm_key] = []
+                        par[span_key].extend(spans)
+                        par[arm_key].extend([arm_count] * len(spans))
+
+                        for i, j in spans:
+                            bio_annotations[i] = f'B-{k}'
+                            for n in range(i + 1, j):
+                                bio_annotations[n] = f'I-{k}'
+                        break
+            
+            # Get annotations for arm columns
+            for k in arm_numbered:
+                for kp in row.index:
+                    if k in kp:
+
+                        span_key = f'ann-{k}-spans'
+                        arm_key = f'ann-{k}-arms'
+                        spans = []
+                        arms = []
+
+                        dash_nums = [int(c[len(k) + 1:-4]) for c in row.index if c.startswith(k) and c.endswith('-tag')]
+
+                        for dn in dash_nums:
+                            tag_key = f'{k}-{dn}-tag'
+                            span_str = row[tag_key]
+                            spans_dn = get_spans(span_str)
+                            arm_id = (arm_count, dn)
+                            spans.extend(spans_dn)
+                            arms.extend([arm_id] * len(spans_dn))
+                        
+                        if span_key not in par:
+                            par[span_key] = []
+                            par[arm_key] = []
+                        par[span_key].extend(spans)
+                        par[arm_key].extend(arms)
+
+                        for i, j in spans:
+                            bio_annotations[i] = f'B-{k}'
+                            for n in range(i + 1, j):
+                                bio_annotations[n] = f'I-{k}'
+
+                        break
+        
+        if len(set(bio_annotations)) > 1:
+            par['bio_annotations'] = bio_annotations
+            par['annotated'] = True
+
+    return doc_struct
+
+
+if __name__ == '__main__':
+    input_struct = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/structs/annotations_test/test_docs.json'
+    annotations_path = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/structs/annotations_test/merged.csv'
+    output_struct = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/structs/annotations_test/test_docs2.json'
+
+    load_annotations(input_struct, annotations_path, output_struct)

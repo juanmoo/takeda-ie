@@ -14,6 +14,8 @@ def struct_to_bio(struct, task, label_map={}, **kwargs):
         return struct_to_rd_bio(struct, label_map=label_map, **kwargs)
 
 
+ner_tags = ['authors', 'study_type', 'arm_efficacy_metric', 'arm_efficacy_results', 'arm_dosage', 'arm_description']
+
 def struct_to_ner_bio(struct, label_map={}, **kwargs):
     doc_structs = struct['documents']
     fnames = doc_structs.keys()
@@ -27,53 +29,39 @@ def struct_to_ner_bio(struct, label_map={}, **kwargs):
 
             text = entry['text']
             bmes_tokens = text.split()
-            bmes_annotations = ['O |'] * len(bmes_tokens)
+            bmes_annotations = ['O'] * len(bmes_tokens)
 
             lmin = None
             lmax = None
-            for k in [e for e in entry.keys() if e.startswith('ann-') and e.endswith('-spans') and 'title' not in e]:
-                key = k[4:-6]
+            for key in ner_tags:
+                if f'ann-{key}-spans' not in entry:
+                    continue
+            # for k in [e for e in entry.keys() if e.startswith('ann-') and e.endswith('-spans') and 'title' not in e]:
+                # key = k[4:-6]
+                k = f'ann-{key}-spans'
                 key = label_map.get(key, key)
 
                 for start, stop in entry[k]:
                     # For tokens that were annotated multiple times, ranges take precedence over singletons
                     for i in range(start, stop):
-                        if bmes_annotations[i] != 'O |':
-                            lmin = start if not lmin else min(lmin, start)
-                            lmax = stop if not lmax else max(lmax, stop)
-                        else:
-                            bmes_annotations[i] = ''
-
+                        # if bmes_annotations[i] != 'O |':
+                        #     lmin = start if not lmin else min(lmin, start)
+                        #     lmax = stop if not lmax else max(lmax, stop)
+                        # else:
+                        #     bmes_annotations[i] = ''
                         if i == start:
-                            bmes_annotations[i] += f' B-{key} |'
+                            bmes_annotations[i] = f' B-{key}'
                         else:
-                            bmes_annotations[i] += f' I-{key} |'
+                            bmes_annotations[i] = f'I-{key}'
 
-            bmes_annotations = list(map(lambda s: s[:-2], bmes_annotations))
-
-            # Merge identical tags
-            all_merged = True
-            for j, a in enumerate(bmes_annotations):
-                tags = list(set([e.strip() for e in a.split('|')]))
-                if len(tags) == 1:
-                    bmes_annotations[j] = tags[0]
-                else:
-                    all_merged = False
-
-            if all_merged != True:
-                raise Exception('Found overlapping annotations.')
-
+                
             bmes = list(zip(bmes_tokens, bmes_annotations))
 
-            # Add delimiters in places where disagreeing overlapping annotations
-            # occur in defined range.
-            if lmin and lmax and not all_merged:
-                bmes.insert(lmax, '^-' * 20 + 'STOP' + '-^' * 20)
-                bmes.insert(lmin, 'v-' * 20 + 'START' + '-v' * 20)
 
             bmes = '\n'.join([' '.join(p) for p in bmes])
             paragraphs_bmes.append(bmes)
         bmes_list.append(paragraphs_bmes)
+
     return dict(zip(fnames, bmes_list))
 
 # Empty NER
