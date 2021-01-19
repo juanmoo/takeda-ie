@@ -92,18 +92,22 @@ def load_annotations(input_struct, annotations_path, output_struct, **kwargs):
     # Load Annotations
     annotations = pd.read_csv(annotations_path).fillna('')
 
+    count = 0
     for doc_id in tqdm(struct['documents']):
         doc_struct = struct['documents'][doc_id]
         doc_struct = load_document_annotations(doc_struct, annotations)
         # p = Process(target=load_document_annotations, args=(doc_struct, annotations,))
         if doc_struct:
             struct['documents'][doc_id] = doc_struct
+            count += 1
         else:
             print('Nothing to do for: {}'.format(doc_id))
 
     # Save annotated struct
     with open(output_struct, 'w') as output_file:
         json.dump(struct, output_file, indent=4)
+    
+    print('Annotated {} documents.'.format(count))
 
 def get_spans(spans_str):
     idxs = [int(e) for e in spans_str.split(',') if len(e) > 0]
@@ -128,6 +132,8 @@ def load_document_annotations(doc_struct, annotations, **kwargs):
         bio_annotations = ['O'] * len(par['text'].strip().split(' '))
 
         for j, row in ann_par.iterrows():
+            par['annotated'] = True
+
             # Get arm number
             arm_count = int(row['arm_number'])
 
@@ -210,10 +216,8 @@ def load_document_annotations(doc_struct, annotations, **kwargs):
                                 bio_annotations[n] = f'I-{k}'
 
                         break
-        
-        if len(set(bio_annotations)) > 1:
+        if par['annotated']:
             par['bio_annotations'] = bio_annotations
-            par['annotated'] = True
 
     return doc_struct
 

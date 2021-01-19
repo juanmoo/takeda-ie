@@ -11,6 +11,7 @@ from uuid import uuid4 as uuid
 from tqdm import tqdm
 from sklearn.metrics import f1_score, recall_score, precision_score
 from functools import reduce
+import random
 
 dir_path = os.path.dirname(os.path.realpath(__file__))
 project_root = '/'.join(dir_path.split('/')[:-4])
@@ -26,7 +27,7 @@ from processing import format
 
 ### Training ###
 
-def train(struct_path, output_model_dir, **kwargs):
+def train(struct_path, output_model_dir, eval_during_training=False, **kwargs):
 
     struct = json.load(open(struct_path, 'r'))
 
@@ -63,6 +64,18 @@ def train(struct_path, output_model_dir, **kwargs):
             for _ in range(rcount):
                 oversampled_pars.append(par)
         train_txts.extend(oversampled_pars)
+    
+    if eval_during_training:
+        # create dev file
+        idxs = list(range(len(train_txts)))
+        random.shuffle(idxs)
+        end = int(0.2 * len(idxs))
+
+        dev_txts = [train_txts[j] for j in idxs[:end]]
+        dev_file_path = os.path.join(data_dir_path, 'valid.txt')
+        with open(dev_file_path, 'w') as f:
+            out = '\n\n'.join(dev_txts)
+            f.write(out)
 
     with open(train_file_path, 'w') as bio_file:
         out = '\n\n'.join(train_txts)
@@ -90,8 +103,7 @@ def pred(struct_path, model_dir, **kwargs):
 
     # Create Dataset
     tmp_dir = tempfile.TemporaryDirectory()
-    tmp_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/tmp'
-    data_dir = os.path.join(tmp_dir, 'data_dir')
+    data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
 
     blank_txts = format.struct_to_bio_empty(struct)
@@ -198,8 +210,7 @@ def pred(struct_path, model_dir, **kwargs):
 
         pred_idx = 0
         for par in doc_struct['paragraphs']:
-            if par['text'].split(' ') == preds[pred_idx]['toks']:
-                print('Match!')
+            if pred_idx < len(preds) and par['text'].split(' ') == preds[pred_idx]['toks']:
                 pred = preds[pred_idx]
                 pred_idx += 1
             else:

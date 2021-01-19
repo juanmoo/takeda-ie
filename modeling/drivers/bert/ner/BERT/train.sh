@@ -7,6 +7,9 @@ OUTPUT_DIR=$2
 gpu="${3}"
 num_epochs=$4
 
+#Overrides
+# gpu="7"
+
 export MODEL_DIR=bert-base-cased
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 n_epochs=10
@@ -20,9 +23,10 @@ CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --max_seq_length 512 \
     --per_gpu_eval_batch_size=8   \
     --per_gpu_train_batch_size=8   \
-    --learning_rate ${num_epochs} \
-    --num_train_epochs ${n_epochs} \
+    --learning_rate  3e-5 \
+    --num_train_epochs ${num_epochs} \
     --output_dir ${OUTPUT_DIR} \
     --overwrite_output_dir \
     --logging_steps 200 \
-    --save_steps -1
+    --save_steps -1 
+    # --evaluate_during_training \

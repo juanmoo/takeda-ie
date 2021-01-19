@@ -31,13 +31,9 @@ def struct_to_ner_bio(struct, label_map={}, **kwargs):
             bmes_tokens = text.split()
             bmes_annotations = ['O'] * len(bmes_tokens)
 
-            lmin = None
-            lmax = None
             for key in ner_tags:
                 if f'ann-{key}-spans' not in entry:
                     continue
-            # for k in [e for e in entry.keys() if e.startswith('ann-') and e.endswith('-spans') and 'title' not in e]:
-                # key = k[4:-6]
                 k = f'ann-{key}-spans'
                 key = label_map.get(key, key)
 
@@ -194,10 +190,11 @@ def process_document_rd_blank(doc_struct, preds, foi=default_foi, trigger=defaul
 
     pred_idx = 0
     for par in doc_struct['paragraphs']:
-        if par['text'].split(' ') == preds[pred_idx]['toks']:
+        if pred_idx < len(preds) and par['text'].split(' ') == preds[pred_idx]['toks']:
             pred = preds[pred_idx]
             pred_idx += 1
         else:
+            print('Skipping par')
             continue
 
         pred = pred['spans']
