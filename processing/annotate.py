@@ -96,7 +96,7 @@ def load_annotations(input_struct, annotations_path, output_struct, **kwargs):
     for doc_id in tqdm(struct['documents']):
         doc_struct = struct['documents'][doc_id]
         doc_struct = load_document_annotations(doc_struct, annotations)
-        # p = Process(target=load_document_annotations, args=(doc_struct, annotations,))
+
         if doc_struct:
             struct['documents'][doc_id] = doc_struct
             count += 1
@@ -227,4 +227,8 @@ if __name__ == '__main__':
     annotations_path = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/structs/annotations_test/merged.csv'
     output_struct = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/structs/annotations_test/test_docs2.json'
 
-    load_annotations(input_struct, annotations_path, output_struct)
+    # global dosage_count
+    # dosage_count = 0
+    # print('Hello')
+    # load_annotations(input_struct, annotations_path, output_struct)
+    # print('Dosage Count: ', dosage_count)

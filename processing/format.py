@@ -173,8 +173,9 @@ def process_document(doc_struct, foi=default_foi, trigger=default_trigger, use_s
             data.append(tagged_segment)
 
     bio_pars = ['\n'.join(['{}\t{}'.format(t, l) for (t, l) in par_toks]) for par_toks in data]
+    bio_txt = '\n\n'.join(bio_pars)
 
-    return bio_pars
+    return bio_txt
 
 def struct_to_rd_bio(struct, label_map={}, use_scent=False, **kwargs):
     doc_structs = struct['documents']
@@ -272,16 +273,34 @@ def make_spans(tags, all_labels=set()):
     return spans
 
 
-# if __name__ == '__main__':
-#     import json
+if __name__ == '__main__':
+    import json
 
-#     infile = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/struct.json'
-#     out_dir = '/data/rsg/nlp/juanmoo1/projects/02_takeda_dev/00_takeda/tmp/test/'
+    infile = '/Users/juanmoo/Desktop/struct_ann.json'
+    out_dir = '/Users/juanmoo/Desktop/generated/'
 
-#     struct = json.load(open(infile, 'r'))
-#     rd_out = struct_to_bio_empty(struct)
+    struct = json.load(open(infile, 'r'))
+    global dosage_count
+    dosage_count = 0
+    rd_out = struct_to_rd_bio(struct)
+    print('Dosage Count: ', dosage_count)
 
-#     for doc_id in rd_out:
-#         fname = os.path.join(out_dir, doc_id + '.bio')
-#         with open(fname, 'w') as ofile:
-#             ofile.write(rd_out[doc_id])
+    txts = rd_out.values()
+    pars = []
+    for txt in txts:
+        doc_pars = [e.strip() for e in txt.split('\n\n') if e.strip() != '']
+        for par in doc_pars:
+            if len(par.split('\n')) <= 300:
+                pars.append(par)
+        # pars.extend(doc_pars)
+    pars.sort()
+
+    merged = '\n\n'.join(pars)
+
+    with open('/Users/juanmoo/Desktop/merged.txt', 'w') as f:
+        f.write(merged)
+
+    # for doc_id in rd_out:
+    #     fname = os.path.join(out_dir, doc_id + '.bio')
+    #     with open(fname, 'w') as ofile:
+    #         ofile.write(rd_out[doc_id])
