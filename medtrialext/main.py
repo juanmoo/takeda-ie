@@ -46,7 +46,7 @@ rd_bio_parser.add_argument('output_dir', type=str, help='Path to directory where
 rd_bio_parser.add_argument('--separate_docs', default=False, action='store_true', help='Output separate documents.')
 rd_bio_parser.set_defaults(handler=formatting.struct_to_bio_rd)
 
-# Train NER
+# Train 
 train_parser = subparser.add_parser('train', help='Train models from annotations.')
 train_parser.add_argument('input_struct', type=str, help='Path to annotated input struct.')
 train_parser.add_argument('models_dir', type=str, help='Path to directory where models shold be saved.')
@@ -57,6 +57,16 @@ train_parser.add_argument('--ner_num_epochs', type=int, default=15, help='Number
 
 train_parser.add_argument('--rd_num_epochs', type=int, default=70, help='Number of training epochs to use during NER model trianing.')
 train_parser.set_defaults(handler=models.bert.train)
+
+# Predict
+pred_parser = subparser.add_parser('pred', help='Make predictions using models and annotations.')
+pred_parser.add_argument('input_struct', type=str, help='Path to input struct.')
+pred_parser.add_argument('models_dir', type=str, help='Models directory.')
+
+pred_parser.add_argument('--output_struct_path', type=str, help='Path to output struct.')
+pred_parser.add_argument('--skip_ner', default=False, action='store_true')
+pred_parser.add_argument('--skip_rd', default=False, action='store_true')
+pred_parser.set_defaults(handler=models.bert.predict)
 
 if __name__ == '__main__':
 

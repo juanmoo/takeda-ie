@@ -12,7 +12,7 @@ num_epochs=$4
 
 export MODEL_DIR=bert-base-cased
 DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
-n_epochs=10
+
 
 CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --model_name_or_path ${MODEL_DIR} \
@@ -28,5 +28,5 @@ CUDA_VISIBLE_DEVICES=${gpu} python ${DIR}/run_tagging.py \
     --output_dir ${OUTPUT_DIR} \
     --overwrite_output_dir \
     --logging_steps 200 \
-    --save_steps -1 
+    --save_steps -1
     # --evaluate_during_training \
