@@ -10,7 +10,7 @@ The code in this repository is structured to be used either programatically or t
 The current available commands are as follows:
 
 
-| Command | Function |
+| Command Name | Function |
 | ---- | ---- |
 | xml_to_struct | Parse GROBID xmls |
 | read_annotations | Read annotations file. |
@@ -19,6 +19,11 @@ The current available commands are as follows:
 | train | Train models from annotations. | 
 | pred | Make predictions using models and annotations. |
 | create_table  | Generate summary table from NER and RD predictions. |
+
+For a more detailed description of the arguments used by each command, run the following:
+```bash
+python medtrialext/main.py <command-name> -h
+```
 
 <!-- ## Performace -->
 <!-- TODO: Table w/ per task perf -->
