@@ -3,7 +3,8 @@ Main CLI interface
 '''
 
 import argparse
-import formatting
+import models
+import models.formatting as formatting
 
 # Main Parser
 parser = argparse.ArgumentParser()
@@ -45,6 +46,17 @@ rd_bio_parser.add_argument('output_dir', type=str, help='Path to directory where
 rd_bio_parser.add_argument('--separate_docs', default=False, action='store_true', help='Output separate documents.')
 rd_bio_parser.set_defaults(handler=formatting.struct_to_bio_rd)
 
+# Train NER
+train_parser = subparser.add_parser('train', help='Train models from annotations.')
+train_parser.add_argument('input_struct', type=str, help='Path to annotated input struct.')
+train_parser.add_argument('models_dir', type=str, help='Path to directory where models shold be saved.')
+
+train_parser.add_argument('--gpus', type=str, default="", help='String containing the ids of GPUs to be used (e.g. "0,1,2"). By default, not GPUs are used (i.e. "").')
+train_parser.add_argument('--ner_or', type=int, default=1, help='Value that should be used to oversample training set during NER model training.')
+train_parser.add_argument('--ner_num_epochs', type=int, default=15, help='Number of training epochs to use during NER model trianing.')
+
+train_parser.add_argument('--rd_num_epochs', type=int, default=70, help='Number of training epochs to use during NER model trianing.')
+train_parser.set_defaults(handler=models.bert.train)
 
 if __name__ == '__main__':
 

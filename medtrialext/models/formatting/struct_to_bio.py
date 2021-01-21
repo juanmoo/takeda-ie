@@ -108,7 +108,7 @@ def struct_to_bio_rd(args):
         with codecs.open(output_file_path, 'wb', encoding='utf-8', errors='replace') as bio_file:
             bio_file.write(txt)
 
-def struct_to_bio_dict_rd(struct_ann_path, oversampling_rate):
+def struct_to_bio_dict_rd(struct_ann_path):
 
     # Read Struct
     struct = None
@@ -118,7 +118,7 @@ def struct_to_bio_dict_rd(struct_ann_path, oversampling_rate):
     bio_dict = {}
 
     for doc_id in struct['annotated_docs']:
-        bio_dict[doc_id] = create_doc_bio_annotations_rd(struct['documents'][doc_id], oversampling_rate)
+        bio_dict[doc_id] = create_doc_bio_annotations_rd(struct['documents'][doc_id])
         
     return bio_dict
 
