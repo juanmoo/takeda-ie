@@ -12,7 +12,6 @@ from tqdm import tqdm
 
 # Create annotation tasks
 
-
 def filter(data, par_min_len=25, par_max_len=300, keep_abstract=False, keep_discussion=False, **kwargs):
 
     # Constraints
@@ -113,7 +112,6 @@ def get_spans(spans_str):
     idxs = [int(e) for e in spans_str.split(',') if len(e) > 0]
     assert(len(idxs)%2 == 0)
     return list(zip(idxs[::2], idxs[1::2]))
-
 
 def load_document_annotations(doc_struct, annotations, **kwargs):
 
