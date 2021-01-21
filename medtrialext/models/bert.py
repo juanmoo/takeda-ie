@@ -126,7 +126,7 @@ def pred_ner(args):
 
     # Load Input struct (result from ner pred)
     struct = None
-    with open(args.output_struct_path, 'r') as struct_file:
+    with open(args.input_struct, 'r') as struct_file:
         struct = json.load(struct_file)
 
     # Root Temp Dir
@@ -136,7 +136,7 @@ def pred_ner(args):
     data_dir = os.path.join(tmp_dir.name, 'data_dir')
     os.makedirs(data_dir, exist_ok=True)
     ovr = vars(args).get('ner_or', 1)
-    bio_dict = formatting.struct_to_bio_dict(args.input_struct, ovr)
+    bio_dict = formatting.struct_to_bio_dict(args.input_struct, ovr, use_tags=False)
     for doc_id in bio_dict:
         doc_dir = os.path.join(data_dir, doc_id)
         os.makedirs(doc_dir, exist_ok=False)
@@ -216,7 +216,7 @@ def pred_ner(args):
                         
                         # Paragraphs are unique. There's no need to keep searching.
                         break
-            print('Matched {} paragraphs in {}.'.format(count, doc_id))
+            print('Made predictions in {} paragraphs in {}.'.format(count, doc_id))
 
     # Save struct to new location and return struct
     with open(args.output_struct_path, 'w') as output_struct:
@@ -302,6 +302,9 @@ def pred_rd(args):
             # Store annotations
             count = 0
             for toks, tags in zip(pars_toks, pars_tags):
+
+                if ('[P1]' not in toks) or ('[P2]' not in toks):
+                    continue
 
                 # Remove delimiters 
                 p1_idx = toks.index('[P1]')

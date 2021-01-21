@@ -3,6 +3,7 @@ Main CLI interface
 '''
 
 import argparse
+import subprocess
 import models
 import models.formatting as formatting
 
@@ -67,6 +68,15 @@ pred_parser.add_argument('--output_struct_path', type=str, help='Path to output 
 pred_parser.add_argument('--skip_ner', default=False, action='store_true')
 pred_parser.add_argument('--skip_rd', default=False, action='store_true')
 pred_parser.set_defaults(handler=models.bert.predict)
+
+# Create Table
+table_parser = subparser.add_parser('create_table', help='Generate summary table from NER and RD predictions.')
+table_parser.add_argument('input_struct', type=str, help='Path to input struct (must contain NER and RD predictions).')
+table_parser.add_argument('output_path', type=str, help='Path to output spreadsheet.')
+
+table_parser.set_defaults(handler=formatting.create_table)
+
+
 
 if __name__ == '__main__':
 

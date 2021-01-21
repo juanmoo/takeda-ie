@@ -41,7 +41,13 @@ def struct_to_bio_dict(struct_ann_path, oversampling_rate, use_tags=True):
 
     bio_dict = {}
 
-    for doc_id in struct['annotated_docs']:
+    doc_ids = []
+    if use_tags:
+        doc_ids = struct['annotated_docs']
+    else:
+        doc_ids = struct['documents'].keys()
+
+    for doc_id in doc_ids:
         bio_dict[doc_id] = create_doc_bio_annotations(
             struct['documents'][doc_id], oversampling_rate, use_tags=use_tags)
 
@@ -131,7 +137,13 @@ def struct_to_bio_dict_rd(struct_ann_path, is_pred=False):
 
     print('Creating empty docs...')
 
-    for doc_id in struct['annotated_docs']:
+    doc_ids = []
+    if not is_pred:
+        doc_ids = struct['annotated_docs']
+    else:
+        doc_ids = struct['documents'].keys()
+
+    for doc_id in doc_ids:
         bio_dict[doc_id] = create_doc_bio_annotations_rd(
             struct['documents'][doc_id], is_pred=is_pred)
 
@@ -223,8 +235,9 @@ def create_doc_bio_annotations_rd(doc_struct, is_pred=False, filters={}):
                 toks.insert(j, '[P2]')
                 toks.insert(i, '[P1]')
                 par_txt = '\n'.join(toks)
-                bio_pars.append(par_txt)
                 toks.pop(i)
                 toks.pop(j)
+                
+                bio_pars.append(par_txt)
 
         return '\n\n'.join(bio_pars)
