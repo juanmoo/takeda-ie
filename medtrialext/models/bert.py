@@ -33,6 +33,17 @@ def train(args):
     # Train RD Model
     train_rd(args)
 
+    # Save args
+    print('Saving metadata ...')
+    metadata = vars(args)
+
+    # Can't serialize handler function
+    metadata.pop('handler', None)
+
+    metadata_file_path = os.path.join(models_dir, 'metadata.json')
+    with open(metadata_file_path, 'w') as metadata_file:
+        json.dump(metadata, metadata_file, indent=4)
+
 def train_ner(args):
     print('Starting NER training ...')
 
